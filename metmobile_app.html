@@ -7,34 +7,79 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <style>
-    :root{--bg:#f3f6f8;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--soft:#f8fafc;--primary:#0f172a;--green:#16a34a;--greenbg:#f0fdf4;--orange:#c2410c;--orangebg:#fff7ed;--shadow:0 10px 30px rgba(15,23,42,.10);--safe:env(safe-area-inset-bottom,0px)}
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent} html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)} body{overflow:hidden}
-    button,input,select{font:inherit}.hidden{display:none!important}.app{height:100dvh;display:flex;flex-direction:column}#map{height:100%;width:100%}
-    .overlay-top{position:fixed;left:12px;right:12px;top:12px;z-index:700;display:flex;justify-content:space-between;gap:10px;pointer-events:none}.overlay-top>*{pointer-events:auto}
+    :root{
+      --bg:#f3f6f8; --card:#fff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0; --soft:#f8fafc;
+      --primary:#0f172a; --green:#16a34a; --greenbg:#f0fdf4; --orange:#c2410c; --orangebg:#fff7ed;
+      --shadow:0 10px 30px rgba(15,23,42,.10); --safe:env(safe-area-inset-bottom,0px);
+      --bar-h: 0px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+    body{overflow:hidden}
+    button,input,select{font:inherit}
+    .hidden{display:none!important}
+    .app{height:100dvh;display:flex;flex-direction:column}
+    #map{height:100%;width:100%}
+    .overlay-top{position:fixed;left:12px;right:12px;top:12px;z-index:700;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+    .overlay-top>*{pointer-events:auto}
     .pill{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:999px;padding:10px 12px;box-shadow:var(--shadow);font-size:12px;font-weight:800}
-    .fab-stack{position:fixed;right:12px;bottom:96px;z-index:700;display:flex;flex-direction:column;gap:10px}.fab{width:56px;height:56px;border-radius:999px;border:none;box-shadow:var(--shadow);background:#fff;font-size:18px;font-weight:800}.fab.primary{background:var(--primary);color:#fff}
-    .bar{position:fixed;left:0;right:0;bottom:0;z-index:800;display:grid;grid-template-columns:1fr 1fr;gap:10px;background:rgba(255,255,255,.98);border-top:1px solid var(--line);padding:10px 12px calc(10px + var(--safe))}
-    .bar button{border:none;border-radius:18px;padding:14px 12px;font-size:14px;font-weight:800}.main{background:var(--primary);color:#fff}.ghost{background:#eef2f7;color:var(--text)}
-    .sheet{position:fixed;left:0;right:0;bottom:0;z-index:750;background:var(--card);border-top-left-radius:28px;border-top-right-radius:28px;box-shadow:0 -10px 40px rgba(15,23,42,.14);border:1px solid var(--line);transform:translateY(calc(100% - 110px));transition:transform .24s ease;max-height:76dvh;padding-bottom:calc(12px + var(--safe))}
-    .sheet.half{transform:translateY(44%)} .sheet.expanded{transform:translateY(0)}
-    .sheet-handle-wrap{display:flex;justify-content:center;padding-top:8px}.sheet-handle{width:46px;height:5px;background:#cbd5e1;border-radius:999px}
-    .sheet-header{padding:10px 14px 8px}.sheet-title{display:flex;justify-content:space-between;align-items:start;gap:10px}.sheet-title h2{margin:0;font-size:16px}.sheet-sub{font-size:12px;color:var(--muted);margin-top:2px}
-    .sheet-content{padding:0 14px 8px;overflow:auto;max-height:calc(76dvh - 72px)}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;box-shadow:var(--shadow)} .soft{background:var(--soft)}
-    .input{width:100%;border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#fff;outline:none}.row{display:flex;gap:8px}.row>*{min-width:0}
-    .btn{border:none;border-radius:16px;padding:12px 14px;font-weight:800}.btn-outline{background:#fff;border:1px solid var(--line)}.btn-main{background:var(--primary);color:#fff}
-    .section{margin-top:14px}.section h3{margin:0 0 8px;font-size:13px}.kits{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-    .kit{border:1px solid var(--line);background:var(--soft);border-radius:18px;padding:12px;text-align:left}.kit .emoji{font-size:22px;margin-bottom:6px}.kit .title{font-size:13px;font-weight:800}.kit .sub{font-size:11px;color:var(--muted);margin-top:2px}
+    .fab-stack{position:fixed;right:12px;bottom:20px;z-index:700;display:flex;flex-direction:column;gap:10px}
+    .fab{width:56px;height:56px;border-radius:999px;border:none;box-shadow:var(--shadow);background:#fff;font-size:18px;font-weight:800}
+    .fab.primary{background:var(--primary);color:#fff}
+    .main{background:var(--primary);color:#fff}
+    .ghost{background:#eef2f7;color:var(--text)}
+    .sheet{
+      position:fixed;left:0;right:0;bottom:0;z-index:750;background:var(--card);border-top-left-radius:28px;border-top-right-radius:28px;
+      box-shadow:0 -10px 40px rgba(15,23,42,.14);border:1px solid var(--line);
+      transform:translateY(calc(100% - 110px));transition:transform .24s ease;
+      max-height:82dvh; padding-bottom:calc(24px + var(--safe));
+    }
+    .sheet.half{transform:translateY(44%)}
+    .sheet.expanded{transform:translateY(0)}
+
+    .sheet.peek{transform:translateY(calc(100% - 110px))}
+    .sheet.mid{transform:translateY(44%)}
+    .sheet.full{transform:translateY(0)}
+
+    .sheet-handle-wrap{display:flex;justify-content:center;padding:12px 0 6px;cursor:grab;touch-action:none}
+    .sheet-handle{width:46px;height:5px;background:#cbd5e1;border-radius:999px}
+    .sheet-header{padding:10px 14px 8px;position:sticky;top:0;background:linear-gradient(to bottom, rgba(255,255,255,.98), rgba(255,255,255,.94));backdrop-filter: blur(6px);z-index:2}
+    .sheet-title{display:flex;justify-content:space-between;align-items:start;gap:10px}
+    .sheet-title h2{margin:0;font-size:16px}
+    .sheet-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .sheet-content{padding:0 14px 0;overflow:auto;max-height:calc(82dvh - 72px - 24px)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;box-shadow:var(--shadow)}
+    .soft{background:var(--soft)}
+    .input{width:100%;border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#fff;outline:none}
+    .row{display:flex;gap:8px}.row>*{min-width:0}
+    .btn{border:none;border-radius:16px;padding:12px 14px;font-weight:800}
+    .btn-outline{background:#fff;border:1px solid var(--line)} .btn-main{background:var(--primary);color:#fff}
+    .section{margin-top:14px}.section h3{margin:0 0 8px;font-size:13px}
+    .kits{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .kit{border:1px solid var(--line);background:var(--soft);border-radius:18px;padding:12px;text-align:left}
+    .kit .emoji{font-size:22px;margin-bottom:6px}.kit .title{font-size:13px;font-weight:800}.kit .sub{font-size:11px;color:var(--muted);margin-top:2px}
     .chips{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 12px;font-size:12px;font-weight:800}
-    .list{display:flex;flex-direction:column;gap:8px}.item{border:1px solid var(--line);border-radius:18px;background:#fff;padding:11px 12px}
+    .list{display:flex;flex-direction:column;gap:8px}
+    .item{border:1px solid var(--line);border-radius:18px;background:#fff;padding:11px 12px}
     .item-top{display:flex;justify-content:space-between;align-items:start;gap:10px}.item-name{font-size:14px;font-weight:800}.item-sub{font-size:11px;color:var(--muted);margin-top:2px}
-    .mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:800}.qty{width:82px;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
-    .tag{display:inline-flex;align-items:center;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}.tag.green{background:var(--greenbg);color:var(--green)}.tag.orange{background:var(--orangebg);color:var(--orange)}
+    .mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:800}
+    .qty{width:82px;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+    .tag{display:inline-flex;align-items:center;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}
+    .tag.green{background:var(--greenbg);color:var(--green)} .tag.orange{background:var(--orangebg);color:var(--orange)}
     .tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.tabs button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 10px;font-weight:800}.tabs .active{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:92px;z-index:1000;background:var(--primary);color:#fff;padding:12px 14px;border-radius:999px;font-size:13px;box-shadow:var(--shadow);max-width:calc(100vw - 32px);text-align:center}
-    .modal{position:fixed;inset:0;z-index:1200;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:16px}.modal-card{width:min(100%,480px);max-height:95dvh;overflow:auto;background:#fff;border-radius:28px;border:1px solid var(--line);padding:16px;box-shadow:var(--shadow)}
-    .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.role{border:2px solid var(--line);border-radius:20px;padding:14px;text-align:left;background:#fff}.role.active{border-color:var(--primary);background:var(--soft)}
-    .divider{height:1px;background:var(--line);margin:12px 0}.summary-head{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.point-title{font-size:14px;font-weight:800}.point-box{border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}.badge{background:var(--soft);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:1000;background:var(--primary);color:#fff;padding:12px 14px;border-radius:999px;font-size:13px;box-shadow:var(--shadow);max-width:calc(100vw - 32px);text-align:center}
+    .modal{position:fixed;inset:0;z-index:1200;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+    .modal-card{width:min(100%,480px);max-height:95dvh;overflow:auto;background:#fff;border-radius:28px;border:1px solid var(--line);padding:16px;box-shadow:var(--shadow)}
+    .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .role{border:2px solid var(--line);border-radius:20px;padding:14px;text-align:left;background:#fff}
+    .role.active{border-color:var(--primary);background:var(--soft)}
+    .divider{height:1px;background:var(--line);margin:12px 0}
+    .summary-head{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+    .point-title{font-size:14px;font-weight:800}
+    .point-box{border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}
+    .badge{background:var(--soft);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .top-actions .mini{flex:1}
     @media (min-width:900px){body{overflow:auto}.app{max-width:520px;margin:0 auto;border-left:1px solid #dbe2ea;border-right:1px solid #dbe2ea}}
   </style>
 </head>
@@ -42,20 +87,32 @@
 <div class="app">
   <div class="overlay-top">
     <div id="mapInfo" class="pill">Haritaya dokunarak nokta ekle</div>
-    <button id="locateBtn" class="pill">Konumum</button>
+    <div class="top-actions">
+      <button id="switchRoleBtn" class="pill">Rol Değiştir</button>
+      <button id="locateBtn" class="pill">Konumum</button>
+    </div>
   </div>
+
   <div id="map"></div>
+
   <div class="fab-stack">
     <button id="projectsBtn" class="fab">≡</button>
     <button id="expandBtn" class="fab primary">↑</button>
   </div>
 
-  <div id="sheet" class="sheet">
+  <div id="sheet" class="sheet mid">
     <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
     <div class="sheet-header">
       <div class="sheet-title">
-        <div><h2 id="sheetTitle">Hazır</h2><div id="sheetSub" class="sheet-sub">İşlem paneli</div></div>
-        <button id="closeSheetBtn" class="mini">Kapat</button>
+        <div>
+          <h2 id="sheetTitle">Hazır</h2>
+          <div id="sheetSub" class="sheet-sub">İşlem paneli</div>
+        </div>
+        <div class="row" style="align-items:center">
+          <button id="menuProjectsBtn" class="mini">Noktalar</button>
+          <button id="menuSummaryBtn" class="mini">Çıktı</button>
+          <button id="closeSheetBtn" class="mini">Kapat</button>
+        </div>
       </div>
     </div>
     <div class="sheet-content">
@@ -70,6 +127,7 @@
             <button id="deletePointBtn" class="btn btn-outline" style="flex:1">Sil</button>
           </div>
         </div>
+
         <div class="section"><h3>Hazır Malzemeler</h3><div id="kitsArea" class="kits"></div></div>
         <div id="suggestionSection" class="section hidden"><h3>Malzeme Önerileri</h3><div id="suggestionsArea" class="chips"></div></div>
         <div class="section"><div class="tabs"><button id="tabCurrentBtn" class="active">Bu Nokta</button><button id="tabAddBtn">Malzeme Ekle</button></div></div>
@@ -89,17 +147,21 @@
       </div>
 
       <div id="projectsPanel" class="hidden"><div class="section" style="margin-top:0"><h3>Projedeki Noktalar</h3><div id="projectsArea" class="list"></div></div></div>
+
       <div id="summaryPanel" class="hidden">
-        <div class="section" style="margin-top:0"><div class="row"><button id="downloadCsvBtn" class="btn btn-outline" style="flex:1">CSV</button><button id="sendMailBtn" class="btn btn-main" style="flex:1">Mail Taslağı</button></div></div>
+        <div class="section" style="margin-top:0">
+          <div class="row">
+            <button id="downloadCsvBtn" class="btn btn-outline" style="flex:1">CSV</button>
+            <button id="sendMailBtn" class="btn btn-main" style="flex:1">Mail Taslağı</button>
+          </div>
+        </div>
         <div class="section"><h3>Nokta Bazlı Çıktı</h3><div id="summaryArea" class="list"></div></div>
       </div>
+      <div style="height:32px"></div>
     </div>
   </div>
 
-  <div class="bar">
-    <button id="pointsModeBtn" class="ghost">Noktalar</button>
-    <button id="summaryModeBtn" class="main">Çıktı</button>
-  </div>
+  
 
   <div id="toast" class="toast hidden"></div>
 
@@ -107,10 +169,12 @@
     <div class="modal-card">
       <div style="font-size:22px;font-weight:900">Başlangıç</div>
       <div class="item-sub" style="margin-top:4px">İlk girişte bilgileri alacağız. Sonrasında bu alanlar görünmeyecek.</div>
+
       <div class="role-grid">
         <button data-role="chief" class="role active"><div style="font-weight:900">Şantiye Şefi</div><div class="item-sub">Nokta ve malzeme girişi yapar</div></button>
         <button data-role="engineer" class="role"><div style="font-weight:900">Kontrol Mühendisi</div><div class="item-sub">Projeyi açar, onaylar ve hakedişi kilitler</div></button>
       </div>
+
       <div class="divider"></div>
 
       <div id="chiefForm">
@@ -123,6 +187,7 @@
         <div class="section" style="margin-top:0"><h3>Proje Seç</h3><select id="obProjectSelect" class="input"></select></div>
         <div class="section"><h3>Mail</h3><input id="obEmailEngineer" class="input" placeholder="Mail adresi" /></div>
       </div>
+
       <div class="section"><button id="startBtn" class="btn btn-main" style="width:100%">Devam Et</button></div>
     </div>
   </div>
@@ -144,21 +209,19 @@ const MATERIALS = [
   { code:"6.001", name:"Demontaj Direk", category:"Demontaj" },{ code:"6.101", name:"Demontaj Travers", category:"Demontaj" },{ code:"6.201", name:"Demontaj İzolatör", category:"Demontaj" }
 ];
 const STORAGE = { projects:"mm-projects", session:"mm-session" };
-
 const state = { projects:load(STORAGE.projects, {}), session:load(STORAGE.session, null), selectedPointId:null, copyModeId:null, markers:{}, sheetMode:"point", tab:"current", userLocationMarker:null, onboardingRole:"chief", onboardingLocation:null };
-
 const $ = id => document.getElementById(id);
 const els = {
-  mapInfo:$("mapInfo"), locateBtn:$("locateBtn"), projectsBtn:$("projectsBtn"), expandBtn:$("expandBtn"), sheet:$("sheet"), closeSheetBtn:$("closeSheetBtn"), sheetTitle:$("sheetTitle"), sheetSub:$("sheetSub"),
+  mapInfo:$("mapInfo"), locateBtn:$("locateBtn"), projectsBtn:$("projectsBtn"), expandBtn:$("expandBtn"), switchRoleBtn:$("switchRoleBtn"),
+  sheet:$("sheet"), closeSheetBtn:$("closeSheetBtn"), sheetTitle:$("sheetTitle"), sheetSub:$("sheetSub"),
   emptyPanel:$("emptyPanel"), chefPanel:$("chefPanel"), engineerPanel:$("engineerPanel"), projectsPanel:$("projectsPanel"), summaryPanel:$("summaryPanel"),
-  pointName:$("pointName"), pointCoords:$("pointCoords"), copyPointBtn:$("copyPointBtn"), deletePointBtn:$("deletePointBtn"), kitsArea:$("kitsArea"), suggestionSection:$("suggestionSection"), suggestionsArea:$("suggestionsArea"),
+  pointName:$("pointName"), pointCoords:$("pointCoords"), copyPointBtn:$("copyPointBtn"), deletePointBtn:$("deletePointBtn"),
+  kitsArea:$("kitsArea"), suggestionSection:$("suggestionSection"), suggestionsArea:$("suggestionsArea"),
   tabCurrentBtn:$("tabCurrentBtn"), tabAddBtn:$("tabAddBtn"), currentTab:$("currentTab"), addTab:$("addTab"), chefItemsArea:$("chefItemsArea"), materialSearch:$("materialSearch"), materialsArea:$("materialsArea"),
-  engPointName:$("engPointName"), engPointCoords:$("engPointCoords"), approvePointBtn:$("approvePointBtn"), engineerItemsArea:$("engineerItemsArea"), projectsArea:$("projectsArea"), summaryArea:$("summaryArea"),
-  pointsModeBtn:$("pointsModeBtn"), summaryModeBtn:$("summaryModeBtn"), downloadCsvBtn:$("downloadCsvBtn"), sendMailBtn:$("sendMailBtn"), toast:$("toast"),
-  onboarding:$("onboarding"), chiefForm:$("chiefForm"), engineerForm:$("engineerForm"), obProjectName:$("obProjectName"), obEmail:$("obEmail"), obLocationText:$("obLocationText"), obGetLocationBtn:$("obGetLocationBtn"),
-  obProjectSelect:$("obProjectSelect"), obEmailEngineer:$("obEmailEngineer"), startBtn:$("startBtn")
+  engPointName:$("engPointName"), engPointCoords:$("engPointCoords"), approvePointBtn:$("approvePointBtn"), engineerItemsArea:$("engineerItemsArea"),
+  projectsArea:$("projectsArea"), summaryArea:$("summaryArea"), pointsModeBtn:$("pointsModeBtn"), summaryModeBtn:$("summaryModeBtn"), downloadCsvBtn:$("downloadCsvBtn"), sendMailBtn:$("sendMailBtn"), toast:$("toast"),
+  onboarding:$("onboarding"), chiefForm:$("chiefForm"), engineerForm:$("engineerForm"), obProjectName:$("obProjectName"), obEmail:$("obEmail"), obLocationText:$("obLocationText"), obGetLocationBtn:$("obGetLocationBtn"), obProjectSelect:$("obProjectSelect"), obEmailEngineer:$("obEmailEngineer"), startBtn:$("startBtn")
 };
-
 function load(key, fallback){ try{ const r=localStorage.getItem(key); return r?JSON.parse(r):fallback; } catch { return fallback; } }
 function saveAll(){ localStorage.setItem(STORAGE.projects, JSON.stringify(state.projects)); localStorage.setItem(STORAGE.session, JSON.stringify(state.session)); }
 function toast(msg){ els.toast.textContent=msg; els.toast.classList.remove("hidden"); clearTimeout(window.__t); window.__t=setTimeout(()=>els.toast.classList.add("hidden"),2200); }
@@ -166,38 +229,95 @@ function uid(){ return Date.now()+"-"+Math.random().toString(36).slice(2,9); }
 function project(){ return state.session ? state.projects[state.session.projectId] || null : null; }
 function points(){ const p=project(); return p ? p.points||[] : []; }
 function selectedPoint(){ return points().find(p=>p.id===state.selectedPointId) || null; }
-function setProject(p){ p.points=p.points||[]; p.approvals=p.approvals||{}; state.projects[p.id]=p; saveAll(); }
+function setProject(p){ p.points=p.points||[]; p.approvals=p.approvals||{}; p.logs=p.logs||[]; state.projects[p.id]=p; saveAll(); }
 function approvalMap(pointId){ const p=project(); return p && p.approvals && p.approvals[pointId] ? p.approvals[pointId] : {}; }
-function openSheet(mode="half"){ els.sheet.classList.remove("half","expanded"); els.sheet.classList.add(mode==="expanded"?"expanded":"half"); }
-function closeSheet(){ els.sheet.classList.remove("half","expanded"); }
-function updateMapInfo(){ els.mapInfo.textContent = !state.session ? "Başlangıç bilgilerini gir" : state.copyModeId ? "Kopyalama açık: yeni yere dokun" : state.session.role==="chief" ? "Haritaya dokunarak nokta ekle" : "Noktalara dokunarak kontrol et"; }
-function setSheetMode(mode){ state.sheetMode=mode; [els.emptyPanel,els.chefPanel,els.engineerPanel,els.projectsPanel,els.summaryPanel].forEach(x=>x.classList.add("hidden")); if(mode==="projects"){ els.sheetTitle.textContent="Noktalar"; els.sheetSub.textContent="Projedeki noktalar"; els.projectsPanel.classList.remove("hidden"); } else if(mode==="summary"){ els.sheetTitle.textContent="Çıktı"; els.sheetSub.textContent="Nokta bazlı keşif çıktısı"; els.summaryPanel.classList.remove("hidden"); } else { const p=selectedPoint(); if(!p){ els.sheetTitle.textContent="Nokta seç"; els.sheetSub.textContent="Haritaya dokunarak yeni nokta oluştur veya seç"; els.emptyPanel.classList.remove("hidden"); } else if(state.session.role==="chief"){ els.sheetTitle.textContent=p.name; els.sheetSub.textContent="Hazır malzeme veya tekli ekleme"; els.chefPanel.classList.remove("hidden"); } else { els.sheetTitle.textContent=p.name; els.sheetSub.textContent="Onay ve ilave keşif kontrolü"; els.engineerPanel.classList.remove("hidden"); } } }
-function drawMarkers(){ Object.values(state.markers).forEach(m=>map.removeLayer(m)); state.markers={}; points().forEach(p=>{ const marker=L.marker([p.lat,p.lng]).addTo(map); marker.bindPopup(`<div><b>${p.name}</b><br><span style="font-size:12px;color:#64748b">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</span><br><span style="font-size:12px">${p.items.length} satır</span></div>`); marker.on("click",()=>selectPoint(p.id)); state.markers[p.id]=marker; }); }
+function setSheetSnap(mode){
+  els.sheet.classList.remove("peek","mid","full","half","expanded");
+  if(mode==="full") els.sheet.classList.add("full");
+  else if(mode==="mid") els.sheet.classList.add("mid");
+  else els.sheet.classList.add("peek");
+}
+function openSheet(mode="mid"){ setSheetSnap(mode==="expanded" ? "full" : mode==="half" ? "mid" : mode); }
+function closeSheet(){ setSheetSnap("peek"); }
+function updateMapInfo(){
+  const roleText = state.session ? (state.session.role==="chief" ? "Şantiye Şefi" : "Kontrol Mühendisi") : "Rol seç";
+  els.switchRoleBtn.textContent = roleText + " · Değiştir";
+  els.mapInfo.textContent = !state.session ? "Başlangıç bilgilerini gir" : state.copyModeId ? "Kopyalama açık: yeni yere dokun" : state.session.role==="chief" ? "Haritaya dokunarak nokta ekle" : "Noktalara dokunarak kontrol et";
+}
+function setSheetMode(mode){
+  state.sheetMode=mode;
+  [els.emptyPanel,els.chefPanel,els.engineerPanel,els.projectsPanel,els.summaryPanel].forEach(x=>x.classList.add("hidden"));
+  if(mode==="projects"){ els.sheetTitle.textContent="Noktalar"; els.sheetSub.textContent="Projedeki noktalar"; els.projectsPanel.classList.remove("hidden"); return; }
+  if(mode==="summary"){ els.sheetTitle.textContent="Çıktı"; els.sheetSub.textContent="Nokta bazlı keşif çıktısı"; els.summaryPanel.classList.remove("hidden"); return; }
+  const p=selectedPoint();
+  if(!p){ els.sheetTitle.textContent="Nokta seç"; els.sheetSub.textContent="Haritaya dokunarak yeni nokta oluştur veya seç"; els.emptyPanel.classList.remove("hidden"); return; }
+  if(state.session && state.session.role==="chief"){ els.sheetTitle.textContent=p.name; els.sheetSub.textContent="Hazır malzeme veya tekli ekleme"; els.chefPanel.classList.remove("hidden"); }
+  else { els.sheetTitle.textContent=p.name; els.sheetSub.textContent="Onay ve ilave keşif kontrolü"; els.engineerPanel.classList.remove("hidden"); }
+}
+function drawMarkers(){
+  Object.values(state.markers).forEach(m=>map.removeLayer(m)); state.markers={};
+  points().forEach(p=>{
+    const marker=L.marker([p.lat,p.lng]).addTo(map);
+    marker.bindPopup(`<div><b>${p.name}</b><br><span style="font-size:12px;color:#64748b">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</span><br><span style="font-size:12px">${p.items.length} satır</span></div>`);
+    marker.on("click",()=>selectPoint(p.id));
+    state.markers[p.id]=marker;
+  });
+}
 function createProject(name,email,location){ return { id:"prj-"+uid(), name, email, location, points:[], approvals:{}, logs:[] }; }
 function findMaterial(code){ return MATERIALS.find(m=>m.code===code)||null; }
-function getSuggestions(items){ const p=project(); const selectedCodes=new Set(items.map(x=>x.code)); const counts={}; (p.logs||[]).forEach(log=>{ const codes=log.codes||[]; if(!codes.some(c=>selectedCodes.has(c))) return; codes.forEach(code=>{ if(!selectedCodes.has(code)) counts[code]=(counts[code]||0)+1; }); }); return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([code,score])=>({ ...findMaterial(code), score })).filter(Boolean); }
-function logPointItems(point){ const p=project(); p.logs=p.logs||[]; p.logs.unshift({ pointId:point.id, time:new Date().toISOString(), codes:point.items.map(i=>i.code) }); p.logs=p.logs.slice(0,300); setProject(p); }
-function addPoint(latlng){ const p=project(); if(!p) return; if(state.session.role==="engineer"){ toast("Kontrol mühendisi yeni nokta eklemez"); return; } if(state.copyModeId){ const source=p.points.find(x=>x.id===state.copyModeId); if(!source) return; const clone={ ...source, id:uid(), name:source.name+" Kopya", lat:latlng.lat, lng:latlng.lng, items:source.items.map(i=>({...i,rowId:uid()})) }; p.points.push(clone); state.selectedPointId=clone.id; state.copyModeId=null; setProject(p); render(); setSheetMode("point"); openSheet("half"); toast("Nokta kopyalandı"); return; } const point={ id:uid(), name:`Nokta ${p.points.length+1}`, lat:latlng.lat, lng:latlng.lng, items:[] }; p.points.push(point); state.selectedPointId=point.id; setProject(p); render(); setSheetMode("point"); openSheet("half"); toast("Yeni nokta oluşturuldu"); }
-function selectPoint(id){ state.selectedPointId=id; setSheetMode("point"); render(); openSheet("half"); }
+function getSuggestions(items){
+  const p=project(); const selectedCodes=new Set(items.map(x=>x.code)); const counts={};
+  (p.logs||[]).forEach(log=>{ const codes=log.codes||[]; if(!codes.some(c=>selectedCodes.has(c))) return; codes.forEach(code=>{ if(!selectedCodes.has(code)) counts[code]=(counts[code]||0)+1; }); });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([code,score])=>({ ...findMaterial(code), score })).filter(Boolean);
+}
+function logPointItems(point){ const p=project(); p.logs.unshift({ pointId:point.id, time:new Date().toISOString(), codes:point.items.map(i=>i.code) }); p.logs=p.logs.slice(0,300); setProject(p); }
+function addPoint(latlng){
+  const p=project(); if(!p) return;
+  if(state.session.role==="engineer"){ toast("Kontrol mühendisi yeni nokta eklemez"); return; }
+  if(state.copyModeId){
+    const source=p.points.find(x=>x.id===state.copyModeId); if(!source) return;
+    const clone={ ...source, id:uid(), name:source.name+" Kopya", lat:latlng.lat, lng:latlng.lng, items:source.items.map(i=>({...i,rowId:uid()})) };
+    p.points.push(clone); state.selectedPointId=clone.id; state.copyModeId=null; setProject(p); render(); setSheetMode("point"); openSheet("mid"); toast("Nokta kopyalandı"); return;
+  }
+  const point={ id:uid(), name:`Nokta ${p.points.length+1}`, lat:latlng.lat, lng:latlng.lng, items:[] };
+  p.points.push(point); state.selectedPointId=point.id; setProject(p); render(); setSheetMode("point"); openSheet("mid"); toast("Yeni nokta oluşturuldu");
+}
+function selectPoint(id){ state.selectedPointId=id; setSheetMode("point"); render(); openSheet("mid"); }
 function updateSelectedPoint(patch){ const p=project(); const point=selectedPoint(); if(!p||!point) return; p.points=p.points.map(x=>x.id===point.id?{...x,...patch}:x); setProject(p); render(); }
 function removePoint(id){ const p=project(); if(!p) return; const marker=state.markers[id]; if(marker){ map.removeLayer(marker); delete state.markers[id]; } p.points=p.points.filter(x=>x.id!==id); delete p.approvals[id]; if(state.selectedPointId===id) state.selectedPointId=null; if(state.copyModeId===id) state.copyModeId=null; setProject(p); render(); }
-function addItemsToSelected(items){ const p=project(); const point=selectedPoint(); if(!p||!point) return; const newItems=[...point.items]; items.forEach(item=>{ const ex=newItems.find(x=>x.code===item.code); if(ex) ex.quantity=Number(ex.quantity||0)+Number(item.quantity||1); else newItems.push({...item,rowId:uid()}); }); p.points=p.points.map(x=>x.id===point.id?{...x,items:newItems}:x); setProject(p); logPointItems({ ...point, items:newItems }); render(); toast("Malzeme eklendi"); }
+function addItemsToSelected(items){
+  const p=project(); const point=selectedPoint(); if(!p||!point) return;
+  const newItems=[...point.items];
+  items.forEach(item=>{ const ex=newItems.find(x=>x.code===item.code); if(ex) ex.quantity=Number(ex.quantity||0)+Number(item.quantity||1); else newItems.push({...item,rowId:uid()}); });
+  p.points=p.points.map(x=>x.id===point.id?{...x,items:newItems}:x); setProject(p); logPointItems({ ...point, items:newItems }); render(); toast("Malzeme eklendi");
+}
 function updateItem(rowId, qty){ const p=project(); const point=selectedPoint(); if(!p||!point) return; const items=point.items.map(i=>i.rowId===rowId?{...i,quantity:Number(qty||0)}:i); p.points=p.points.map(x=>x.id===point.id?{...x,items}:x); setProject(p); render(); }
 function removeItem(rowId){ const p=project(); const point=selectedPoint(); if(!p||!point) return; const items=point.items.filter(i=>i.rowId!==rowId); p.points=p.points.map(x=>x.id===point.id?{...x,items}:x); setProject(p); render(); }
 function approveSelectedPoint(){ const p=project(); const point=selectedPoint(); if(!p||!point) return; p.approvals[point.id]=p.approvals[point.id]||{}; point.items.forEach(i=>{ p.approvals[point.id][i.code]=Number(i.quantity||0); }); setProject(p); render(); toast("Nokta onaylandı ve kilitlendi"); }
-function pointOutputGroups(){ return points().map(point=>{ const ap=approvalMap(point.id); const rows=point.items.map(i=>{ const approved=Number(ap[i.code]||0), current=Number(i.quantity||0), extra=Math.max(current-approved,0); return { code:i.code, material:i.name, current, approved, extra }; }).filter(r=>r.current>0||r.approved>0||r.extra>0); return { point, rows }; }).filter(g=>g.rows.length); }
+function pointOutputGroups(){
+  return points().map(point=>{
+    const ap=approvalMap(point.id);
+    const rows=point.items.map(i=>{ const approved=Number(ap[i.code]||0), current=Number(i.quantity||0), extra=Math.max(current-approved,0); return { code:i.code, material:i.name, current, approved, extra }; }).filter(r=>r.current>0||r.approved>0||r.extra>0);
+    return { point, rows };
+  }).filter(g=>g.rows.length);
+}
 function exportRows(){ const p=project(); const rows=[]; pointOutputGroups().forEach(g=>g.rows.forEach(r=>rows.push([p.name,g.point.name,r.code,r.material,r.current,r.approved,r.extra]))); return rows; }
-function downloadCsv(){ const rows=[["Proje","Nokta","Kod","Malzeme","Toplam","Onaylı","İlave"], ...exportRows()]; const csv=rows.map(line=>line.map(cell=>`"${String(cell).replaceAll('"','""')}"`).join(",")).join("\\n"); const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`${project().name.replace(/\\s+/g,"_")}_nokta_bazli_kesif.csv`; a.click(); URL.revokeObjectURL(url); }
-function sendMail(){ const rows=exportRows(); const lines=[`${project().name} proje keşif özeti:`, ""]; let prev=""; rows.forEach(r=>{ if(r[1]!==prev){ lines.push(`### ${r[1]}`); prev=r[1]; } lines.push(`- ${r[3]} (${r[2]}) | Toplam: ${r[4]} | Onaylı: ${r[5]} | İlave: ${r[6]}`); }); window.location.href=`mailto:${encodeURIComponent(state.session.email || project().email || "")}?subject=${encodeURIComponent(project().name + " - Nokta Bazlı Keşif")}&body=${encodeURIComponent(lines.join("\\n"))}`; }
+function downloadCsv(){ const rows=[["Proje","Nokta","Kod","Malzeme","Toplam","Onaylı","İlave"], ...exportRows()]; const csv=rows.map(line=>line.map(cell=>`"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n"); const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`${project().name.replace(/\s+/g,"_")}_nokta_bazli_kesif.csv`; a.click(); URL.revokeObjectURL(url); }
+function sendMail(){ const rows=exportRows(); const lines=[`${project().name} proje keşif özeti:`, ""]; let prev=""; rows.forEach(r=>{ if(r[1]!==prev){ lines.push(`### ${r[1]}`); prev=r[1]; } lines.push(`- ${r[3]} (${r[2]}) | Toplam: ${r[4]} | Onaylı: ${r[5]} | İlave: ${r[6]}`); }); window.location.href=`mailto:${encodeURIComponent(state.session.email || project().email || "")}?subject=${encodeURIComponent(project().name + " - Nokta Bazlı Keşif")}&body=${encodeURIComponent(lines.join("\n"))}`; }
 
 function renderChefPanel(point){
   els.pointName.value=point.name; els.pointCoords.textContent=`${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
   els.kitsArea.innerHTML=QUICK_KITS.map(kit=>`<button class="kit" data-kit="${kit.id}"><div class="emoji">${kit.emoji}</div><div class="title">${kit.title}</div><div class="sub">${kit.items.length} kalem</div></button>`).join("");
   els.kitsArea.querySelectorAll("[data-kit]").forEach(btn=>btn.addEventListener("click",()=>{ const kit=QUICK_KITS.find(k=>k.id===btn.dataset.kit); if(kit) addItemsToSelected(kit.items); }));
   const suggestions=getSuggestions(point.items);
-  if(!suggestions.length){ els.suggestionSection.classList.add("hidden"); els.suggestionsArea.innerHTML=""; } else { els.suggestionSection.classList.remove("hidden"); els.suggestionsArea.innerHTML=suggestions.map(s=>`<button class="chip" data-sug="${s.code}">${s.name} · ${s.score}</button>`).join(""); els.suggestionsArea.querySelectorAll("[data-sug]").forEach(btn=>btn.addEventListener("click",()=>{ const m=findMaterial(btn.dataset.sug); if(m) addItemsToSelected([{...m,quantity:1}]); })); }
+  if(!suggestions.length){ els.suggestionSection.classList.add("hidden"); els.suggestionsArea.innerHTML=""; }
+  else{
+    els.suggestionSection.classList.remove("hidden");
+    els.suggestionsArea.innerHTML=suggestions.map(s=>`<button class="chip" data-sug="${s.code}">${s.name} · ${s.score}</button>`).join("");
+    els.suggestionsArea.querySelectorAll("[data-sug]").forEach(btn=>btn.addEventListener("click",()=>{ const m=findMaterial(btn.dataset.sug); if(m) addItemsToSelected([{...m,quantity:1}]); }));
+  }
   const ap=approvalMap(point.id);
-  els.chefItemsArea.innerHTML = !point.items.length ? `<div class="card">Hazır malzemelerden bir set seçerek başlayın.</div>` : point.items.map(item=>{ const approved=Number(ap[item.code]||0), extra=Math.max(Number(item.quantity||0)-approved,0); return `<div class="item"><div class="item-top"><div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div><button class="mini" data-remove="${item.rowId}">Sil</button></div><div class="row" style="margin-top:10px;align-items:center"><input class="qty" type="number" min="0" value="${item.quantity}" data-qty="${item.rowId}">${approved>0?`<span class="tag green">Onaylı ${approved}</span>`:""}${extra>0?`<span class="tag orange">İlave ${extra}</span>`:""}</div></div>`; }).join("");
+  els.chefItemsArea.innerHTML=!point.items.length?`<div class="card">Hazır malzemelerden bir set seçerek başlayın.</div>`:point.items.map(item=>{ const approved=Number(ap[item.code]||0), extra=Math.max(Number(item.quantity||0)-approved,0); return `<div class="item"><div class="item-top"><div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div><button class="mini" data-remove="${item.rowId}">Sil</button></div><div class="row" style="margin-top:10px;align-items:center"><input class="qty" type="number" min="0" value="${item.quantity}" data-qty="${item.rowId}">${approved>0?`<span class="tag green">Onaylı ${approved}</span>`:""}${extra>0?`<span class="tag orange">İlave ${extra}</span>`:""}</div></div>`; }).join("");
   els.chefItemsArea.querySelectorAll("[data-remove]").forEach(btn=>btn.addEventListener("click",()=>removeItem(btn.dataset.remove)));
   els.chefItemsArea.querySelectorAll("[data-qty]").forEach(inp=>inp.addEventListener("change",()=>updateItem(inp.dataset.qty, inp.value)));
   const q=(els.materialSearch.value||"").toLocaleLowerCase("tr"); const mats=MATERIALS.filter(m=>`${m.name} ${m.code} ${m.category}`.toLocaleLowerCase("tr").includes(q));
@@ -209,23 +329,87 @@ function renderEngineerPanel(point){
   const ap=approvalMap(point.id);
   els.engineerItemsArea.innerHTML=!point.items.length?`<div class="card">Bu noktada henüz malzeme yok.</div>`:point.items.map(item=>{ const approved=Number(ap[item.code]||0), current=Number(item.quantity||0), extra=Math.max(current-approved,0); return `<div class="item"><div class="item-top"><div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div><div>${approved>0?`<span class="tag green">Kilitli ${approved}</span>`:""}${extra>0?`<span class="tag orange">İlave ${extra}</span>`:approved===0?`<span class="tag orange">Yeni ${current}</span>`:""}</div></div><div class="item-sub" style="margin-top:8px">Toplam: ${current}</div></div>`; }).join("");
 }
-function renderProjectsPanel(){ const pts=points(); els.projectsArea.innerHTML=!pts.length?`<div class="card">Henüz nokta yok.</div>`:pts.map(point=>`<div class="item"><div class="item-top"><div><div class="item-name">${point.name}</div><div class="item-sub">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)} · ${point.items.length} satır</div></div></div><div class="row" style="margin-top:10px"><button class="mini" data-open="${point.id}">Aç</button>${state.session.role==="chief"?`<button class="mini" data-copy="${point.id}">Kopyala</button><button class="mini" data-delete="${point.id}">Sil</button>`:""}</div></div>`).join(""); els.projectsArea.querySelectorAll("[data-open]").forEach(btn=>btn.addEventListener("click",()=>selectPoint(btn.dataset.open))); els.projectsArea.querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click",()=>{ state.copyModeId=btn.dataset.copy; updateMapInfo(); closeSheet(); toast("Yeni konuma dokunarak kopyala"); })); els.projectsArea.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",()=>removePoint(btn.dataset.delete))); }
-function renderSummaryPanel(){ const groups=pointOutputGroups(); els.summaryArea.innerHTML=!groups.length?`<div class="card">Henüz çıktı oluşmadı.</div>`:groups.map(group=>`<div class="card"><div class="point-title">${group.point.name}</div><div class="item-sub">${group.point.lat.toFixed(5)}, ${group.point.lng.toFixed(5)}</div>${group.rows.map(r=>`<div class="point-box" style="margin-top:8px"><div class="item-top"><div><div class="item-name">${r.material}</div><div class="item-sub">${r.code}</div></div><div style="text-align:right"><div class="badge">Toplam ${r.current}</div><div style="margin-top:6px">${r.approved>0?`<span class="tag green">Onaylı ${r.approved}</span>`:""} ${r.extra>0?`<span class="tag orange">İlave ${r.extra}</span>`:""}</div></div></div></div>`).join("")}</div>`).join(""); }
-function render(){ updateMapInfo(); drawMarkers(); renderProjectsPanel(); renderSummaryPanel(); const p=selectedPoint(); if(state.sheetMode==="projects") setSheetMode("projects"); else if(state.sheetMode==="summary") setSheetMode("summary"); else setSheetMode("point"); if(p){ if(state.session.role==="chief") renderChefPanel(p); else renderEngineerPanel(p); } }
-function showOnboarding(){ els.onboarding.classList.remove("hidden"); const ps=Object.values(state.projects); els.obProjectSelect.innerHTML=ps.length?ps.map(p=>`<option value="${p.id}">${p.name}</option>`).join(""):`<option value="">Önce bir proje oluşturulmalı</option>`; }
+function renderProjectsPanel(){
+  const pts=points();
+  els.projectsArea.innerHTML=!pts.length?`<div class="card">Henüz nokta yok.</div>`:pts.map(point=>`<div class="item"><div class="item-top"><div><div class="item-name">${point.name}</div><div class="item-sub">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)} · ${point.items.length} satır</div></div></div><div class="row" style="margin-top:10px"><button class="mini" data-open="${point.id}">Aç</button>${state.session.role==="chief"?`<button class="mini" data-copy="${point.id}">Kopyala</button><button class="mini" data-delete="${point.id}">Sil</button>`:""}</div></div>`).join("");
+  els.projectsArea.querySelectorAll("[data-open]").forEach(btn=>btn.addEventListener("click",()=>selectPoint(btn.dataset.open)));
+  els.projectsArea.querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click",()=>{ state.copyModeId=btn.dataset.copy; updateMapInfo(); closeSheet(); toast("Yeni konuma dokunarak kopyala"); }));
+  els.projectsArea.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",()=>removePoint(btn.dataset.delete)));
+}
+function renderSummaryPanel(){
+  const groups=pointOutputGroups();
+  els.summaryArea.innerHTML=!groups.length?`<div class="card">Henüz çıktı oluşmadı.</div>`:groups.map(group=>`<div class="card"><div class="point-title">${group.point.name}</div><div class="item-sub">${group.point.lat.toFixed(5)}, ${group.point.lng.toFixed(5)}</div>${group.rows.map(r=>`<div class="point-box" style="margin-top:8px"><div class="item-top"><div><div class="item-name">${r.material}</div><div class="item-sub">${r.code}</div></div><div style="text-align:right"><div class="badge">Toplam ${r.current}</div><div style="margin-top:6px">${r.approved>0?`<span class="tag green">Onaylı ${r.approved}</span>`:""} ${r.extra>0?`<span class="tag orange">İlave ${r.extra}</span>`:""}</div></div></div></div>`).join("")}</div>`).join("");
+}
+function render(){
+  updateMapInfo(); drawMarkers(); renderProjectsPanel(); renderSummaryPanel();
+  const p=selectedPoint();
+  if(state.sheetMode==="projects") setSheetMode("projects"); else if(state.sheetMode==="summary") setSheetMode("summary"); else setSheetMode("point");
+  if(p){ if(state.session && state.session.role==="chief") renderChefPanel(p); else if(state.session) renderEngineerPanel(p); }
+}
+function showOnboarding(){
+  els.onboarding.classList.remove("hidden");
+  const ps=Object.values(state.projects);
+  els.obProjectSelect.innerHTML=ps.length?ps.map(p=>`<option value="${p.id}">${p.name}</option>`).join(""):`<option value="">Önce bir proje oluşturulmalı</option>`;
+}
 function hideOnboarding(){ els.onboarding.classList.add("hidden"); }
-function startApp(){ if(!state.session) showOnboarding(); else render(); }
+function resetSessionToOnboarding(){
+  state.session = null;
+  saveAll();
+  showOnboarding();
+  closeSheet();
+  updateMapInfo();
+}
+function startApp(){ if(!state.session) showOnboarding(); else { render(); setSheetSnap("peek"); } }
 
-Array.from(document.querySelectorAll("[data-role]")).forEach(btn=>btn.addEventListener("click",()=>{ state.onboardingRole=btn.dataset.role; document.querySelectorAll("[data-role]").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); els.chiefForm.classList.toggle("hidden", state.onboardingRole!=="chief"); els.engineerForm.classList.toggle("hidden", state.onboardingRole!=="engineer"); }));
-els.obGetLocationBtn.addEventListener("click",()=>{ if(!navigator.geolocation){ toast("Konum alınamadı"); return; } navigator.geolocation.getCurrentPosition(pos=>{ state.onboardingLocation={ lat:pos.coords.latitude, lng:pos.coords.longitude }; els.obLocationText.value=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`; },()=>toast("Konum alınamadı")); });
-els.startBtn.addEventListener("click",()=>{ if(state.onboardingRole==="chief"){ const name=els.obProjectName.value.trim(); if(!name){ toast("Proje adı gerekli"); return; } let p=Object.values(state.projects).find(x=>x.name===name); if(!p){ p=createProject(name, els.obEmail.value.trim(), state.onboardingLocation); setProject(p); } state.session={ role:"chief", projectId:p.id, email:els.obEmail.value.trim(), location:state.onboardingLocation }; } else { const pid=els.obProjectSelect.value; if(!pid||!state.projects[pid]){ toast("Geçerli bir proje seçin"); return; } state.session={ role:"engineer", projectId:pid, email:els.obEmailEngineer.value.trim() }; } saveAll(); hideOnboarding(); render(); });
-
-els.locateBtn.addEventListener("click",()=>{ if(!navigator.geolocation){ toast("Konum desteklenmiyor"); return; } navigator.geolocation.getCurrentPosition(pos=>{ const latlng=[pos.coords.latitude,pos.coords.longitude]; map.setView(latlng,18); if(state.userLocationMarker) map.removeLayer(state.userLocationMarker); state.userLocationMarker=L.marker(latlng).addTo(map).bindPopup("Mevcut konum"); toast("Konum bulundu"); },()=>toast("Konum alınamadı")); });
-els.projectsBtn.addEventListener("click",()=>{ setSheetMode("projects"); openSheet("expanded"); render(); });
-els.expandBtn.addEventListener("click",()=>openSheet("expanded"));
+Array.from(document.querySelectorAll("[data-role]")).forEach(btn=>btn.addEventListener("click",()=>{
+  state.onboardingRole=btn.dataset.role;
+  document.querySelectorAll("[data-role]").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  els.chiefForm.classList.toggle("hidden", state.onboardingRole!=="chief");
+  els.engineerForm.classList.toggle("hidden", state.onboardingRole!=="engineer");
+}));
+els.obGetLocationBtn.addEventListener("click",()=>{
+  if(!navigator.geolocation){ toast("Konum alınamadı"); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    state.onboardingLocation={ lat:pos.coords.latitude, lng:pos.coords.longitude };
+    els.obLocationText.value=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+  },()=>toast("Konum alınamadı"));
+});
+els.startBtn.addEventListener("click",()=>{
+  if(state.onboardingRole==="chief"){
+    const name=els.obProjectName.value.trim();
+    if(!name){ toast("Proje adı gerekli"); return; }
+    let p=Object.values(state.projects).find(x=>x.name===name);
+    if(!p){
+      p=createProject(name, els.obEmail.value.trim(), state.onboardingLocation);
+      setProject(p);
+    }
+    state.session={ role:"chief", projectId:p.id, email:els.obEmail.value.trim(), location:state.onboardingLocation };
+  } else {
+    const pid=els.obProjectSelect.value;
+    if(!pid || !state.projects[pid]){ toast("Geçerli bir proje seçin"); return; }
+    state.session={ role:"engineer", projectId:pid, email:els.obEmailEngineer.value.trim() };
+  }
+  saveAll();
+  hideOnboarding();
+  render();
+});
+els.switchRoleBtn.addEventListener("click", resetSessionToOnboarding);
+els.locateBtn.addEventListener("click",()=>{
+  if(!navigator.geolocation){ toast("Konum desteklenmiyor"); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const latlng=[pos.coords.latitude,pos.coords.longitude];
+    map.setView(latlng,18);
+    if(state.userLocationMarker) map.removeLayer(state.userLocationMarker);
+    state.userLocationMarker=L.marker(latlng).addTo(map).bindPopup("Mevcut konum");
+    toast("Konum bulundu");
+  },()=>toast("Konum alınamadı"));
+});
+els.projectsBtn.addEventListener("click",()=>{ setSheetMode("projects"); openSheet("full"); render(); });
+els.expandBtn.addEventListener("click",()=>openSheet("full"));
 els.closeSheetBtn.addEventListener("click",()=>closeSheet());
-els.pointsModeBtn.addEventListener("click",()=>{ setSheetMode("projects"); openSheet("expanded"); render(); });
-els.summaryModeBtn.addEventListener("click",()=>{ setSheetMode("summary"); openSheet("expanded"); render(); });
+els.menuProjectsBtn.addEventListener("click",()=>{ setSheetMode("projects"); openSheet("full"); render(); });
+els.menuSummaryBtn.addEventListener("click",()=>{ setSheetMode("summary"); openSheet("full"); render(); });
 els.tabCurrentBtn.addEventListener("click",()=>{ state.tab="current"; els.tabCurrentBtn.classList.add("active"); els.tabAddBtn.classList.remove("active"); els.currentTab.classList.remove("hidden"); els.addTab.classList.add("hidden"); });
 els.tabAddBtn.addEventListener("click",()=>{ state.tab="add"; els.tabAddBtn.classList.add("active"); els.tabCurrentBtn.classList.remove("active"); els.addTab.classList.remove("hidden"); els.currentTab.classList.add("hidden"); });
 els.materialSearch.addEventListener("input",()=>{ const p=selectedPoint(); if(p && state.session && state.session.role==="chief") renderChefPanel(p); });
@@ -234,7 +418,47 @@ els.copyPointBtn.addEventListener("click",()=>{ const p=selectedPoint(); if(!p) 
 els.deletePointBtn.addEventListener("click",()=>{ const p=selectedPoint(); if(!p) return; removePoint(p.id); toast("Nokta silindi"); });
 els.approvePointBtn.addEventListener("click",approveSelectedPoint);
 els.downloadCsvBtn.addEventListener("click",()=>{ downloadCsv(); toast("CSV indirildi"); });
-els.sendMailBtn.addEventListener("click",()=>{ sendMail(); });
+els.sendMailBtn.addEventListener("click",sendMail);
+
+
+const handle = document.querySelector('.sheet-handle-wrap');
+let dragStartY = null;
+let dragging = false;
+
+handle.addEventListener('touchstart', (e) => {
+  dragStartY = e.touches[0].clientY;
+  dragging = true;
+}, {passive:true});
+
+handle.addEventListener('touchmove', (e) => {
+  if(!dragging) return;
+  const y = e.touches[0].clientY;
+  const diff = y - dragStartY;
+  if(diff < -80) setSheetSnap('full');
+  else if(diff > 80) setSheetSnap('peek');
+  else setSheetSnap('mid');
+}, {passive:true});
+
+handle.addEventListener('touchend', () => {
+  dragging = false;
+  dragStartY = null;
+});
+
+handle.addEventListener('mousedown', (e) => {
+  dragStartY = e.clientY;
+  dragging = true;
+});
+window.addEventListener('mousemove', (e) => {
+  if(!dragging) return;
+  const diff = e.clientY - dragStartY;
+  if(diff < -80) setSheetSnap('full');
+  else if(diff > 80) setSheetSnap('peek');
+  else setSheetSnap('mid');
+});
+window.addEventListener('mouseup', () => {
+  dragging = false;
+  dragStartY = null;
+});
 
 const map = L.map('map', { zoomControl:false }).setView([39.92, 32.85], 6);
 L.control.zoom({ position:'bottomright' }).addTo(map);
