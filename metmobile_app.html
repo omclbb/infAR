@@ -2,677 +2,800 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Saha Mobil Demo</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    html, body { height: 100%; margin: 0; }
-    #map { height: 640px; width: 100%; border-radius: 24px; }
-    .leaflet-container { font: inherit; }
-    .scroll { overflow: auto; }
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --soft:#f8fafc;
+      --primary:#0f172a;
+      --primary-2:#1e293b;
+      --success:#ecfdf5;
+      --shadow:0 8px 30px rgba(15,23,42,.08);
+      --radius:22px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+    body{overflow:hidden}
+    button,input{font:inherit}
+    .app{height:100dvh;display:flex;flex-direction:column}
+    .topbar{padding:12px 14px 10px;background:rgba(244,246,248,.95);backdrop-filter: blur(8px);position:relative;z-index:20}
+    .project-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:12px;box-shadow:var(--shadow)}
+    .title{font-size:20px;font-weight:800;line-height:1.1}
+    .subtitle{font-size:12px;color:var(--muted);margin-top:4px}
+    .row{display:flex;gap:8px}
+    .row > *{min-width:0}
+    .input{width:100%;border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 14px;font-size:14px;outline:none}
+    .btn{border:none;border-radius:16px;padding:13px 14px;font-weight:700;font-size:14px;cursor:pointer}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-soft{background:#fff;border:1px solid var(--line);color:var(--text)}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+    .stat{background:var(--soft);border-radius:16px;padding:10px 8px;text-align:center}
+    .stat b{display:block;font-size:18px}
+    .stat span{font-size:11px;color:var(--muted)}
+    .map-area{position:relative;flex:1;min-height:0}
+    #map{height:100%;width:100%}
+    .floating-top{
+      position:absolute;left:12px;right:12px;top:10px;z-index:600;
+      display:flex;justify-content:space-between;gap:8px;pointer-events:none;
+    }
+    .floating-top > *{pointer-events:auto}
+    .pill{
+      background:rgba(255,255,255,.96);border:1px solid var(--line);box-shadow:var(--shadow);
+      border-radius:999px;padding:10px 12px;font-size:12px;font-weight:700;color:var(--text)
+    }
+    .fab-stack{
+      position:absolute;right:12px;bottom:130px;z-index:700;display:flex;flex-direction:column;gap:10px
+    }
+    .fab{
+      width:54px;height:54px;border-radius:999px;border:none;box-shadow:var(--shadow);background:#fff;font-size:22px;font-weight:800
+    }
+    .fab.primary{background:var(--primary);color:#fff}
+    .bottom-sheet{
+      position:fixed;left:0;right:0;bottom:0;z-index:800;background:var(--card);
+      border-top-left-radius:28px;border-top-right-radius:28px;border:1px solid var(--line);
+      box-shadow:0 -10px 40px rgba(15,23,42,.12);
+      max-height:80dvh;transform:translateY(calc(100% - 92px));transition:transform .25s ease;
+      padding-bottom:calc(14px + var(--safe-bottom));
+    }
+    .bottom-sheet.expanded{transform:translateY(0)}
+    .sheet-handle-wrap{padding:8px 0 0;display:flex;justify-content:center}
+    .sheet-handle{width:44px;height:5px;border-radius:999px;background:#cbd5e1}
+    .sheet-header{padding:10px 14px 8px}
+    .sheet-title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .sheet-title h2{margin:0;font-size:16px}
+    .sheet-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .sheet-content{padding:0 14px 10px;overflow:auto;max-height:calc(80dvh - 80px)}
+    .point-meta{background:var(--soft);border-radius:18px;padding:10px}
+    .coord{font-size:11px;color:var(--muted)}
+    .seg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+    .seg button{padding:11px;border-radius:14px;border:1px solid var(--line);background:#fff;font-weight:700}
+    .section{margin-top:14px}
+    .section h3{margin:0 0 8px;font-size:13px}
+    .kits{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .kit{border:1px solid var(--line);background:var(--soft);border-radius:18px;padding:12px;text-align:left}
+    .kit .emoji{font-size:22px;margin-bottom:6px}
+    .kit .name{font-size:13px;font-weight:800}
+    .kit .desc{font-size:11px;color:var(--muted);margin-top:2px}
+    .chip-wrap{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 12px;font-size:12px;font-weight:700}
+    .search{margin-bottom:8px}
+    .material-list,.item-list,.summary-list,.point-list{display:flex;flex-direction:column;gap:8px}
+    .list-card{border:1px solid var(--line);border-radius:18px;background:#fff;padding:11px 12px}
+    .list-card .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .list-card .name{font-size:14px;font-weight:700}
+    .list-card .sub{font-size:11px;color:var(--muted);margin-top:2px}
+    .mini-btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:700}
+    .qty{width:76px;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+    .bar{
+      position:fixed;left:0;right:0;bottom:0;z-index:900;background:rgba(255,255,255,.98);
+      border-top:1px solid var(--line);padding:10px 12px calc(10px + var(--safe-bottom));display:grid;grid-template-columns:1fr 1fr;gap:10px
+    }
+    .bar button{padding:14px;border-radius:18px;border:none;font-weight:800}
+    .bar .ghost{background:#eef2f7;color:var(--text)}
+    .bar .main{background:var(--primary);color:#fff}
+    .hidden{display:none!important}
+    .toast{
+      position:fixed;left:50%;transform:translateX(-50%);bottom:92px;z-index:1000;
+      background:var(--primary);color:#fff;padding:12px 14px;border-radius:999px;font-size:13px;
+      box-shadow:var(--shadow);max-width:calc(100vw - 32px);text-align:center
+    }
+    .mode-switch{display:flex;gap:8px}
+    .mode-switch button{flex:1;border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 10px;font-weight:700}
+    .mode-switch button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    @media (min-width: 900px){
+      body{overflow:auto}
+      .app{max-width:520px;margin:0 auto;border-left:1px solid #dbe2ea;border-right:1px solid #dbe2ea;background:var(--bg)}
+    }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-900">
-  <div class="mx-auto max-w-7xl p-4 md:p-6">
-    <div class="mb-4 rounded-[28px] bg-white p-4 shadow-sm ring-1 ring-slate-200">
-      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 class="text-2xl font-semibold tracking-tight">Saha Mobil Demo</h1>
-          <p class="text-sm text-slate-600">Tek mantık: haritaya dokun, set seç, gerekirse miktarı düzelt, keşfi al.</p>
-        </div>
-        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          <input id="projectName" placeholder="Proje adı" class="rounded-2xl border border-slate-300 px-3 py-2 text-sm" />
-          <input id="email" placeholder="Mail adresi" class="rounded-2xl border border-slate-300 px-3 py-2 text-sm" />
-          <button id="locateBtn" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">Konumum</button>
-          <button id="sendBtn" class="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">Gönder</button>
-        </div>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="project-card">
+      <div class="title">Saha Mobil</div>
+      <div class="subtitle">Haritada dokun • Hazır set seç • Keşfi gönder</div>
+      <div class="row" style="margin-top:10px">
+        <input id="projectName" class="input" placeholder="Proje adı" />
       </div>
-
-      <div class="mt-3 grid grid-cols-3 gap-2">
-        <div class="rounded-2xl bg-slate-50 p-3 text-center">
-          <div id="statPoints" class="text-xl font-semibold">0</div>
-          <div class="text-xs text-slate-500">Nokta</div>
-        </div>
-        <div class="rounded-2xl bg-slate-50 p-3 text-center">
-          <div id="statRows" class="text-xl font-semibold">0</div>
-          <div class="text-xs text-slate-500">Toplam Satır</div>
-        </div>
-        <div class="rounded-2xl bg-slate-50 p-3 text-center">
-          <div id="statDiscovery" class="text-xl font-semibold">0</div>
-          <div class="text-xs text-slate-500">Keşif Kalemi</div>
-        </div>
+      <div class="row" style="margin-top:8px">
+        <input id="email" class="input" placeholder="Mail adresi" />
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="statPoints">0</b><span>Nokta</span></div>
+        <div class="stat"><b id="statRows">0</b><span>Satır</span></div>
+        <div class="stat"><b id="statDiscovery">0</b><span>Keşif</span></div>
       </div>
     </div>
-
-    <div class="grid gap-4 lg:grid-cols-[1.25fr_0.95fr]">
-      <div class="overflow-hidden rounded-[28px] bg-white shadow-sm ring-1 ring-slate-200">
-        <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 text-sm text-slate-600">
-          <span id="mapInfo">Haritada bir yere dokunarak yeni nokta aç</span>
-          <button id="toggleViewBtn" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium hover:bg-slate-200">Keşfi Gör</button>
-        </div>
-
-        <div id="mapWrap" class="p-3">
-          <div id="map"></div>
-        </div>
-
-        <div id="summaryWrap" class="hidden h-[640px] overflow-auto p-4">
-          <div class="overflow-hidden rounded-3xl border border-slate-200">
-            <table class="min-w-full text-sm">
-              <thead class="bg-slate-50 text-left text-slate-600">
-                <tr>
-                  <th class="px-4 py-3 font-medium">Proje</th>
-                  <th class="px-4 py-3 font-medium">Kod</th>
-                  <th class="px-4 py-3 font-medium">Malzeme</th>
-                  <th class="px-4 py-3 font-medium">Miktar</th>
-                </tr>
-              </thead>
-              <tbody id="summaryBody">
-                <tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Henüz keşif oluşmadı</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex h-[640px] flex-col rounded-[28px] bg-white shadow-sm ring-1 ring-slate-200">
-        <div class="border-b border-slate-200 p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h2 class="text-lg font-semibold">Hızlı İşlem</h2>
-              <p class="text-sm text-slate-500">Nokta seçildiğinde tek panelden işlem yap</p>
-            </div>
-            <span id="selectedBadge" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">Nokta seç</span>
-          </div>
-        </div>
-
-        <div id="emptyState" class="flex flex-1 items-center justify-center p-6 text-center text-sm text-slate-500">
-          Önce haritada bir nokta oluştur veya mevcut bir noktaya dokun.
-        </div>
-
-        <div id="pointPanel" class="hidden flex-1 overflow-auto p-4">
-          <div class="mb-3 rounded-2xl bg-slate-50 p-3">
-            <input id="pointName" class="mb-2 w-full rounded-2xl border border-slate-300 px-3 py-2 text-sm" />
-            <div id="pointCoords" class="text-xs text-slate-500">-</div>
-            <div class="mt-3 flex gap-2">
-              <button id="copyPointBtn" class="flex-1 rounded-2xl border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-white">Kopyala</button>
-              <button id="deletePointBtn" class="flex-1 rounded-2xl border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-white">Sil</button>
-            </div>
-          </div>
-
-          <div>
-            <div class="mb-2 text-sm font-medium">Hazır Setler</div>
-            <div id="kitsArea" class="grid gap-2 sm:grid-cols-2"></div>
-          </div>
-
-          <div id="suggestionBlock" class="mt-4 hidden">
-            <div class="mb-2 text-sm font-medium">Akıllı Öneriler</div>
-            <div id="suggestionsArea" class="flex flex-wrap gap-2"></div>
-          </div>
-
-          <div class="mt-4 rounded-2xl border border-slate-200 p-3">
-            <button id="toggleMaterialsBtn" class="flex w-full items-center justify-between text-left">
-              <div>
-                <div class="text-sm font-medium">Tekli Malzeme Ekle</div>
-                <div class="text-xs text-slate-500">Sadece gerektiğinde aç</div>
-              </div>
-              <span id="toggleMaterialsIcon">▶</span>
-            </button>
-
-            <div id="allMaterialsWrap" class="hidden mt-3">
-              <input id="materialSearch" placeholder="Malzeme veya kod ara" class="mb-3 w-full rounded-2xl border border-slate-300 px-3 py-2 text-sm" />
-              <div id="materialsArea" class="max-h-52 space-y-2 overflow-auto pr-1"></div>
-            </div>
-          </div>
-
-          <div class="mt-4">
-            <div class="mb-2 text-sm font-medium">Bu Noktanın Malzemeleri</div>
-            <div id="pointItemsArea" class="space-y-2"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <button id="floatingToggleBtn" class="fixed bottom-5 left-1/2 z-[1000] -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-xl hover:bg-slate-700">
-      Keşfi Aç (0)
-    </button>
   </div>
 
-  <div id="toast" class="hidden fixed bottom-20 right-4 z-[1000] rounded-2xl bg-slate-900 px-4 py-3 text-sm text-white shadow-lg"></div>
+  <div class="map-area">
+    <div class="floating-top">
+      <div id="mapInfo" class="pill">Haritaya dokunarak nokta ekle</div>
+      <button id="locateBtn" class="pill">Konumum</button>
+    </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <div id="map"></div>
 
-  <script>
-    const QUICK_KITS = [
-      {
-        id: "kit-beton-direk",
-        title: "Beton Direk Seti",
-        emoji: "🧱",
-        items: [
-          { code: "1.001", name: "Beton Direk", category: "Direk", quantity: 1 },
-          { code: "1.101", name: "AG Travers", category: "Travers", quantity: 1 },
-          { code: "1.201", name: "AG İzolatör", category: "İzolatör", quantity: 3 },
-          { code: "1.401", name: "Bağ Teli", category: "Aksesuar", quantity: 1 }
-        ]
-      },
-      {
-        id: "kit-demir-direk",
-        title: "Demir Direk Seti",
-        emoji: "🗼",
-        items: [
-          { code: "1.002", name: "Demir Direk", category: "Direk", quantity: 1 },
-          { code: "1.102", name: "OG Travers", category: "Travers", quantity: 1 },
-          { code: "1.202", name: "OG İzolatör", category: "İzolatör", quantity: 3 },
-          { code: "1.403", name: "Civata Seti", category: "Aksesuar", quantity: 1 }
-        ]
-      },
-      {
-        id: "kit-aydinlatma",
-        title: "Aydınlatma Direği Seti",
-        emoji: "💡",
-        items: [
-          { code: "1.003", name: "Aydınlatma Direği", category: "Direk", quantity: 1 },
-          { code: "1.301", name: "AG İletken", category: "İletken", quantity: 1 },
-          { code: "1.402", name: "Kelepçe", category: "Aksesuar", quantity: 2 }
-        ]
-      },
-      {
-        id: "kit-demontaj",
-        title: "Demontaj Seti",
-        emoji: "♻️",
-        items: [
-          { code: "6.001", name: "Demontaj Direk", category: "Demontaj", quantity: 1 },
-          { code: "6.101", name: "Demontaj Travers", category: "Demontaj", quantity: 1 },
-          { code: "6.201", name: "Demontaj İzolatör", category: "Demontaj", quantity: 3 }
-        ]
-      }
-    ];
+    <div class="fab-stack">
+      <button id="showPointsBtn" class="fab">≡</button>
+      <button id="expandSheetBtn" class="fab primary">↑</button>
+    </div>
+  </div>
 
-    const MATERIALS = [
-      { code: "1.001", name: "Beton Direk", category: "Direk" },
-      { code: "1.002", name: "Demir Direk", category: "Direk" },
-      { code: "1.003", name: "Aydınlatma Direği", category: "Direk" },
-      { code: "1.101", name: "AG Travers", category: "Travers" },
-      { code: "1.102", name: "OG Travers", category: "Travers" },
-      { code: "1.201", name: "AG İzolatör", category: "İzolatör" },
-      { code: "1.202", name: "OG İzolatör", category: "İzolatör" },
-      { code: "1.301", name: "AG İletken", category: "İletken" },
-      { code: "1.302", name: "OG İletken", category: "İletken" },
-      { code: "1.401", name: "Bağ Teli", category: "Aksesuar" },
-      { code: "1.402", name: "Kelepçe", category: "Aksesuar" },
-      { code: "1.403", name: "Civata Seti", category: "Aksesuar" },
-      { code: "6.001", name: "Demontaj Direk", category: "Demontaj" },
-      { code: "6.101", name: "Demontaj Travers", category: "Demontaj" },
-      { code: "6.201", name: "Demontaj İzolatör", category: "Demontaj" }
-    ];
-
-    const STORAGE_KEYS = {
-      points: "saha-easy-points",
-      logs: "saha-easy-logs",
-      mail: "saha-easy-mail",
-      project: "saha-easy-project"
-    };
-
-    const state = {
-      points: load(STORAGE_KEYS.points, []),
-      logs: load(STORAGE_KEYS.logs, []),
-      selectedPointId: null,
-      copyModeId: null,
-      userLocationMarker: null,
-      markers: {},
-      showSummary: false,
-      showAllMaterials: false
-    };
-
-    const els = {
-      projectName: document.getElementById("projectName"),
-      email: document.getElementById("email"),
-      locateBtn: document.getElementById("locateBtn"),
-      sendBtn: document.getElementById("sendBtn"),
-      statPoints: document.getElementById("statPoints"),
-      statRows: document.getElementById("statRows"),
-      statDiscovery: document.getElementById("statDiscovery"),
-      mapInfo: document.getElementById("mapInfo"),
-      toggleViewBtn: document.getElementById("toggleViewBtn"),
-      mapWrap: document.getElementById("mapWrap"),
-      summaryWrap: document.getElementById("summaryWrap"),
-      summaryBody: document.getElementById("summaryBody"),
-      selectedBadge: document.getElementById("selectedBadge"),
-      emptyState: document.getElementById("emptyState"),
-      pointPanel: document.getElementById("pointPanel"),
-      pointName: document.getElementById("pointName"),
-      pointCoords: document.getElementById("pointCoords"),
-      copyPointBtn: document.getElementById("copyPointBtn"),
-      deletePointBtn: document.getElementById("deletePointBtn"),
-      kitsArea: document.getElementById("kitsArea"),
-      suggestionBlock: document.getElementById("suggestionBlock"),
-      suggestionsArea: document.getElementById("suggestionsArea"),
-      toggleMaterialsBtn: document.getElementById("toggleMaterialsBtn"),
-      toggleMaterialsIcon: document.getElementById("toggleMaterialsIcon"),
-      allMaterialsWrap: document.getElementById("allMaterialsWrap"),
-      materialSearch: document.getElementById("materialSearch"),
-      materialsArea: document.getElementById("materialsArea"),
-      pointItemsArea: document.getElementById("pointItemsArea"),
-      floatingToggleBtn: document.getElementById("floatingToggleBtn"),
-      toast: document.getElementById("toast")
-    };
-
-    els.projectName.value = load(STORAGE_KEYS.project, "Örnek Saha Projesi");
-    els.email.value = load(STORAGE_KEYS.mail, "");
-
-    function uid() {
-      return Date.now() + "-" + Math.random().toString(36).slice(2, 9);
-    }
-
-    function load(key, fallback) {
-      try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-      } catch {
-        return fallback;
-      }
-    }
-
-    function persist() {
-      localStorage.setItem(STORAGE_KEYS.points, JSON.stringify(state.points));
-      localStorage.setItem(STORAGE_KEYS.logs, JSON.stringify(state.logs));
-      localStorage.setItem(STORAGE_KEYS.mail, JSON.stringify(els.email.value));
-      localStorage.setItem(STORAGE_KEYS.project, JSON.stringify(els.projectName.value));
-    }
-
-    function showToast(message) {
-      els.toast.textContent = message;
-      els.toast.classList.remove("hidden");
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => els.toast.classList.add("hidden"), 2200);
-    }
-
-    function getSelectedPoint() {
-      return state.points.find(p => p.id === state.selectedPointId) || null;
-    }
-
-    function findMaterialByCode(code) {
-      return MATERIALS.find(m => m.code === code) || null;
-    }
-
-    function aggregateRows() {
-      const rows = {};
-      const projectName = els.projectName.value || "Proje";
-      state.points.forEach(point => {
-        point.items.forEach(item => {
-          const key = projectName + "__" + item.code + "__" + item.name;
-          if (!rows[key]) rows[key] = { project: projectName, code: item.code, material: item.name, quantity: 0 };
-          rows[key].quantity += Number(item.quantity || 0);
-        });
-      });
-      return Object.values(rows).sort((a,b) => a.material.localeCompare(b.material, "tr"));
-    }
-
-    function getSuggestions(selectedItems) {
-      const selectedCodes = new Set(selectedItems.map(x => x.code));
-      const counts = {};
-      state.logs.forEach(log => {
-        const codes = log.items.map(x => x.code);
-        const overlap = codes.some(c => selectedCodes.has(c));
-        if (!overlap) return;
-        codes.forEach(code => {
-          if (!selectedCodes.has(code)) counts[code] = (counts[code] || 0) + 1;
-        });
-      });
-      return Object.entries(counts)
-        .sort((a,b) => b[1]-a[1])
-        .slice(0,4)
-        .map(([code, score]) => {
-          const m = findMaterialByCode(code);
-          return m ? { ...m, score } : null;
-        })
-        .filter(Boolean);
-    }
-
-    function toggleSummaryView() {
-      state.showSummary = !state.showSummary;
-      els.mapWrap.classList.toggle("hidden", state.showSummary);
-      els.summaryWrap.classList.toggle("hidden", !state.showSummary);
-      els.toggleViewBtn.textContent = state.showSummary ? "Haritayı Gör" : "Keşfi Gör";
-      els.floatingToggleBtn.textContent = state.showSummary ? "Haritaya Dön" : `Keşfi Aç (${aggregateRows().length})`;
-    }
-
-    function updateStats() {
-      const totalRows = state.points.reduce((sum, p) => sum + p.items.length, 0);
-      const discoveryCount = aggregateRows().length;
-      els.statPoints.textContent = state.points.length;
-      els.statRows.textContent = totalRows;
-      els.statDiscovery.textContent = discoveryCount;
-      els.floatingToggleBtn.textContent = state.showSummary ? "Haritaya Dön" : `Keşfi Aç (${discoveryCount})`;
-    }
-
-    function updateMapInfo() {
-      els.mapInfo.textContent = state.copyModeId
-        ? "Kopyalama açık: haritada yeni yere dokun"
-        : "Haritada bir yere dokunarak yeni nokta aç";
-    }
-
-    function addPoint(latlng) {
-      if (state.copyModeId) {
-        const source = state.points.find(p => p.id === state.copyModeId);
-        if (!source) return;
-        const clone = {
-          ...source,
-          id: uid(),
-          name: source.name + " Kopya",
-          lat: latlng.lat,
-          lng: latlng.lng,
-          items: source.items.map(i => ({ ...i, rowId: uid() }))
-        };
-        state.points.push(clone);
-        state.selectedPointId = clone.id;
-        state.copyModeId = null;
-        persist();
-        drawMarkers();
-        render();
-        showToast("Kopya yeni noktaya yerleştirildi");
-        return;
-      }
-
-      const point = {
-        id: uid(),
-        name: `Nokta ${state.points.length + 1}`,
-        lat: latlng.lat,
-        lng: latlng.lng,
-        items: []
-      };
-      state.points.push(point);
-      state.selectedPointId = point.id;
-      persist();
-      drawMarkers();
-      render();
-      showToast("Yeni nokta oluşturuldu");
-    }
-
-    function selectPoint(id) {
-      state.selectedPointId = id;
-      render();
-    }
-
-    function updateSelectedPoint(patch) {
-      state.points = state.points.map(p => p.id === state.selectedPointId ? { ...p, ...patch } : p);
-      persist();
-      drawMarkers();
-      render();
-    }
-
-    function removePoint(id) {
-      const marker = state.markers[id];
-      if (marker) {
-        map.removeLayer(marker);
-        delete state.markers[id];
-      }
-      state.points = state.points.filter(p => p.id !== id);
-      if (state.selectedPointId === id) state.selectedPointId = null;
-      if (state.copyModeId === id) state.copyModeId = null;
-      persist();
-      drawMarkers();
-      render();
-    }
-
-    function addItemsToSelected(items) {
-      const point = getSelectedPoint();
-      if (!point) return;
-      const newItems = [...point.items, ...items.map(item => ({ ...item, rowId: uid() }))];
-      updateSelectedPoint({ items: newItems });
-
-      const setLog = {
-        id: uid(),
-        pointId: point.id,
-        timestamp: new Date().toISOString(),
-        items: newItems.map(x => ({ code: x.code, name: x.name, category: x.category }))
-      };
-      state.logs = [setLog, ...state.logs].slice(0, 300);
-      persist();
-      render();
-    }
-
-    function addKit(kitId) {
-      const kit = QUICK_KITS.find(k => k.id === kitId);
-      if (!kit) return;
-      addItemsToSelected(kit.items);
-      showToast(kit.title + " eklendi");
-    }
-
-    function addSingleMaterial(code) {
-      const material = findMaterialByCode(code);
-      if (!material) return;
-      addItemsToSelected([{ ...material, quantity: 1 }]);
-      showToast(material.name + " eklendi");
-    }
-
-    function updateItem(rowId, quantity) {
-      const point = getSelectedPoint();
-      if (!point) return;
-      updateSelectedPoint({
-        items: point.items.map(i => i.rowId === rowId ? { ...i, quantity: Number(quantity || 0) } : i)
-      });
-    }
-
-    function removeItem(rowId) {
-      const point = getSelectedPoint();
-      if (!point) return;
-      updateSelectedPoint({ items: point.items.filter(i => i.rowId !== rowId) });
-    }
-
-    function drawMarkers() {
-      Object.values(state.markers).forEach(marker => map.removeLayer(marker));
-      state.markers = {};
-      state.points.forEach(point => {
-        const marker = L.marker([point.lat, point.lng]).addTo(map);
-        marker.bindPopup(`<div class="min-w-40"><div style="font-weight:600">${point.name}</div><div style="font-size:12px;color:#64748b">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}</div><div style="margin-top:6px;font-size:14px">${point.items.length} malzeme satırı</div></div>`);
-        marker.on("click", () => selectPoint(point.id));
-        state.markers[point.id] = marker;
-      });
-    }
-
-    function renderKits() {
-      els.kitsArea.innerHTML = QUICK_KITS.map(kit => `
-        <button data-kit="${kit.id}" class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-left hover:bg-slate-100">
-          <div class="text-lg">${kit.emoji}</div>
-          <div class="font-medium">${kit.title}</div>
-          <div class="mt-1 text-xs text-slate-500">${kit.items.length} kalem tek dokunuş</div>
-        </button>
-      `).join("");
-
-      els.kitsArea.querySelectorAll("[data-kit]").forEach(btn => {
-        btn.addEventListener("click", () => addKit(btn.dataset.kit));
-      });
-    }
-
-    function renderSuggestions(point) {
-      const suggestions = getSuggestions(point.items);
-      if (!suggestions.length) {
-        els.suggestionBlock.classList.add("hidden");
-        els.suggestionsArea.innerHTML = "";
-        return;
-      }
-      els.suggestionBlock.classList.remove("hidden");
-      els.suggestionsArea.innerHTML = suggestions.map(s => `
-        <button data-suggest="${s.code}" class="rounded-full border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-100">
-          ${s.name} <span class="text-slate-400">· ${s.score}</span>
-        </button>
-      `).join("");
-      els.suggestionsArea.querySelectorAll("[data-suggest]").forEach(btn => {
-        btn.addEventListener("click", () => addSingleMaterial(btn.dataset.suggest));
-      });
-    }
-
-    function renderMaterialsList() {
-      const q = (els.materialSearch.value || "").toLocaleLowerCase("tr");
-      const items = MATERIALS.filter(m => `${m.name} ${m.code} ${m.category}`.toLocaleLowerCase("tr").includes(q));
-      els.materialsArea.innerHTML = items.map(m => `
-        <button data-material="${m.code}" class="flex w-full items-center justify-between rounded-2xl border border-slate-200 px-3 py-2 text-left hover:bg-slate-50">
-          <div>
-            <div class="text-sm font-medium">${m.name}</div>
-            <div class="text-xs text-slate-500">${m.category} · ${m.code}</div>
-          </div>
-          <span>＋</span>
-        </button>
-      `).join("");
-
-      els.materialsArea.querySelectorAll("[data-material]").forEach(btn => {
-        btn.addEventListener("click", () => addSingleMaterial(btn.dataset.material));
-      });
-    }
-
-    function renderPointItems(point) {
-      if (!point.items.length) {
-        els.pointItemsArea.innerHTML = `<div class="rounded-2xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">En kolay başlangıç için yukarıdan bir hazır set seç.</div>`;
-        return;
-      }
-      els.pointItemsArea.innerHTML = point.items.map(item => `
-        <div class="grid grid-cols-[1fr_88px_40px] items-center gap-2 rounded-2xl border border-slate-200 p-2">
-          <div>
-            <div class="text-sm font-medium">${item.name}</div>
-            <div class="text-xs text-slate-500">${item.code}</div>
-          </div>
-          <input data-qty="${item.rowId}" type="number" min="0" value="${item.quantity}" class="rounded-xl border border-slate-300 px-3 py-2 text-sm" />
-          <button data-remove="${item.rowId}" class="rounded-xl border border-slate-200 p-2 hover:bg-slate-50">Sil</button>
+  <div id="sheet" class="bottom-sheet">
+    <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
+    <div class="sheet-header">
+      <div class="sheet-title">
+        <div>
+          <h2 id="sheetTitle">Nokta seç</h2>
+          <div id="sheetSub" class="sheet-sub">Önce haritada bir nokta oluştur veya seç</div>
         </div>
-      `).join("");
+        <button id="closeSheetBtn" class="mini-btn">Kapat</button>
+      </div>
+    </div>
+    <div class="sheet-content">
+      <div id="emptyState" class="list-card">
+        Haritaya dokununca yeni nokta oluşur. Ardından hazır set seçerek hızlıca ilerleyebilirsin.
+      </div>
 
-      els.pointItemsArea.querySelectorAll("[data-qty]").forEach(input => {
-        input.addEventListener("change", () => updateItem(input.dataset.qty, input.value));
-      });
-      els.pointItemsArea.querySelectorAll("[data-remove]").forEach(btn => {
-        btn.addEventListener("click", () => removeItem(btn.dataset.remove));
-      });
+      <div id="pointPanel" class="hidden">
+        <div class="point-meta">
+          <input id="pointName" class="input" style="padding:11px 12px" />
+          <div id="pointCoords" class="coord" style="margin-top:6px"></div>
+          <div class="seg">
+            <button id="copyPointBtn">Kopyala</button>
+            <button id="deletePointBtn">Sil</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Hazır Setler</h3>
+          <div id="kitsArea" class="kits"></div>
+        </div>
+
+        <div id="suggestionSection" class="section hidden">
+          <h3>Akıllı Öneriler</h3>
+          <div id="suggestionsArea" class="chip-wrap"></div>
+        </div>
+
+        <div class="section">
+          <div class="mode-switch">
+            <button id="tabItemsBtn" class="active">Malzemeler</button>
+            <button id="tabAddBtn">Ekle</button>
+          </div>
+        </div>
+
+        <div id="itemsTab" class="section">
+          <div id="pointItemsArea" class="item-list"></div>
+        </div>
+
+        <div id="addTab" class="section hidden">
+          <input id="materialSearch" class="input search" placeholder="Kod veya malzeme ara" />
+          <div id="materialsArea" class="material-list"></div>
+        </div>
+      </div>
+
+      <div id="pointsPanel" class="hidden">
+        <div class="section" style="margin-top:0">
+          <h3>Noktalar</h3>
+          <div id="pointsArea" class="point-list"></div>
+        </div>
+      </div>
+
+      <div id="summaryPanel" class="hidden">
+        <div class="section" style="margin-top:0">
+          <h3>Proje Keşfi</h3>
+          <div id="summaryArea" class="summary-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <button id="pointsModeBtn" class="ghost">Noktalar</button>
+    <button id="summaryModeBtn" class="main">Keşif ve Gönder</button>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const QUICK_KITS = [
+  { id:"kit-beton", title:"Beton Direk", emoji:"🧱", items:[
+    { code:"1.001", name:"Beton Direk", category:"Direk", quantity:1 },
+    { code:"1.101", name:"AG Travers", category:"Travers", quantity:1 },
+    { code:"1.201", name:"AG İzolatör", category:"İzolatör", quantity:3 },
+    { code:"1.401", name:"Bağ Teli", category:"Aksesuar", quantity:1 },
+  ]},
+  { id:"kit-demir", title:"Demir Direk", emoji:"🗼", items:[
+    { code:"1.002", name:"Demir Direk", category:"Direk", quantity:1 },
+    { code:"1.102", name:"OG Travers", category:"Travers", quantity:1 },
+    { code:"1.202", name:"OG İzolatör", category:"İzolatör", quantity:3 },
+    { code:"1.403", name:"Civata Seti", category:"Aksesuar", quantity:1 },
+  ]},
+  { id:"kit-aydinlatma", title:"Aydınlatma", emoji:"💡", items:[
+    { code:"1.003", name:"Aydınlatma Direği", category:"Direk", quantity:1 },
+    { code:"1.301", name:"AG İletken", category:"İletken", quantity:1 },
+    { code:"1.402", name:"Kelepçe", category:"Aksesuar", quantity:2 },
+  ]},
+  { id:"kit-demontaj", title:"Demontaj", emoji:"♻️", items:[
+    { code:"6.001", name:"Demontaj Direk", category:"Demontaj", quantity:1 },
+    { code:"6.101", name:"Demontaj Travers", category:"Demontaj", quantity:1 },
+    { code:"6.201", name:"Demontaj İzolatör", category:"Demontaj", quantity:3 },
+  ]},
+];
+
+const MATERIALS = [
+  { code:"1.001", name:"Beton Direk", category:"Direk" },
+  { code:"1.002", name:"Demir Direk", category:"Direk" },
+  { code:"1.003", name:"Aydınlatma Direği", category:"Direk" },
+  { code:"1.101", name:"AG Travers", category:"Travers" },
+  { code:"1.102", name:"OG Travers", category:"Travers" },
+  { code:"1.201", name:"AG İzolatör", category:"İzolatör" },
+  { code:"1.202", name:"OG İzolatör", category:"İzolatör" },
+  { code:"1.301", name:"AG İletken", category:"İletken" },
+  { code:"1.302", name:"OG İletken", category:"İletken" },
+  { code:"1.401", name:"Bağ Teli", category:"Aksesuar" },
+  { code:"1.402", name:"Kelepçe", category:"Aksesuar" },
+  { code:"1.403", name:"Civata Seti", category:"Aksesuar" },
+  { code:"6.001", name:"Demontaj Direk", category:"Demontaj" },
+  { code:"6.101", name:"Demontaj Travers", category:"Demontaj" },
+  { code:"6.201", name:"Demontaj İzolatör", category:"Demontaj" },
+];
+
+const STORAGE_KEYS = {
+  points:"saha-mobile-points",
+  logs:"saha-mobile-logs",
+  mail:"saha-mobile-mail",
+  project:"saha-mobile-project"
+};
+
+const state = {
+  points: load(STORAGE_KEYS.points, []),
+  logs: load(STORAGE_KEYS.logs, []),
+  selectedPointId: null,
+  copyModeId: null,
+  userLocationMarker: null,
+  markers: {},
+  sheetMode: "point", // point | points | summary
+  itemsTab: "items"
+};
+
+const els = {
+  projectName: document.getElementById("projectName"),
+  email: document.getElementById("email"),
+  statPoints: document.getElementById("statPoints"),
+  statRows: document.getElementById("statRows"),
+  statDiscovery: document.getElementById("statDiscovery"),
+  mapInfo: document.getElementById("mapInfo"),
+  locateBtn: document.getElementById("locateBtn"),
+  showPointsBtn: document.getElementById("showPointsBtn"),
+  expandSheetBtn: document.getElementById("expandSheetBtn"),
+  sheet: document.getElementById("sheet"),
+  closeSheetBtn: document.getElementById("closeSheetBtn"),
+  sheetTitle: document.getElementById("sheetTitle"),
+  sheetSub: document.getElementById("sheetSub"),
+  emptyState: document.getElementById("emptyState"),
+  pointPanel: document.getElementById("pointPanel"),
+  pointsPanel: document.getElementById("pointsPanel"),
+  summaryPanel: document.getElementById("summaryPanel"),
+  pointName: document.getElementById("pointName"),
+  pointCoords: document.getElementById("pointCoords"),
+  copyPointBtn: document.getElementById("copyPointBtn"),
+  deletePointBtn: document.getElementById("deletePointBtn"),
+  kitsArea: document.getElementById("kitsArea"),
+  suggestionSection: document.getElementById("suggestionSection"),
+  suggestionsArea: document.getElementById("suggestionsArea"),
+  tabItemsBtn: document.getElementById("tabItemsBtn"),
+  tabAddBtn: document.getElementById("tabAddBtn"),
+  itemsTab: document.getElementById("itemsTab"),
+  addTab: document.getElementById("addTab"),
+  pointItemsArea: document.getElementById("pointItemsArea"),
+  materialSearch: document.getElementById("materialSearch"),
+  materialsArea: document.getElementById("materialsArea"),
+  pointsArea: document.getElementById("pointsArea"),
+  summaryArea: document.getElementById("summaryArea"),
+  pointsModeBtn: document.getElementById("pointsModeBtn"),
+  summaryModeBtn: document.getElementById("summaryModeBtn"),
+  toast: document.getElementById("toast")
+};
+
+els.projectName.value = load(STORAGE_KEYS.project, "Örnek Saha Projesi");
+els.email.value = load(STORAGE_KEYS.mail, "");
+
+function uid(){ return Date.now()+"-"+Math.random().toString(36).slice(2,9); }
+function load(key, fallback){
+  try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+  catch{ return fallback; }
+}
+function persist(){
+  localStorage.setItem(STORAGE_KEYS.points, JSON.stringify(state.points));
+  localStorage.setItem(STORAGE_KEYS.logs, JSON.stringify(state.logs));
+  localStorage.setItem(STORAGE_KEYS.mail, JSON.stringify(els.email.value));
+  localStorage.setItem(STORAGE_KEYS.project, JSON.stringify(els.projectName.value));
+}
+function toast(msg){
+  els.toast.textContent = msg;
+  els.toast.classList.remove("hidden");
+  clearTimeout(window.__toast);
+  window.__toast = setTimeout(()=>els.toast.classList.add("hidden"), 2200);
+}
+function openSheet(){ els.sheet.classList.add("expanded"); }
+function closeSheet(){ els.sheet.classList.remove("expanded"); }
+function getSelectedPoint(){ return state.points.find(p=>p.id===state.selectedPointId) || null; }
+function findMaterialByCode(code){ return MATERIALS.find(m=>m.code===code) || null; }
+
+function aggregateRows(){
+  const rows = {};
+  const projectName = els.projectName.value || "Proje";
+  state.points.forEach(point=>{
+    point.items.forEach(item=>{
+      const key = projectName+"__"+item.code+"__"+item.name;
+      if(!rows[key]) rows[key] = { project:projectName, code:item.code, material:item.name, quantity:0 };
+      rows[key].quantity += Number(item.quantity || 0);
+    });
+  });
+  return Object.values(rows).sort((a,b)=>a.material.localeCompare(b.material,"tr"));
+}
+
+function getSuggestions(selectedItems){
+  const selectedCodes = new Set(selectedItems.map(x=>x.code));
+  const counts = {};
+  state.logs.forEach(log=>{
+    const codes = log.items.map(x=>x.code);
+    const overlap = codes.some(c=>selectedCodes.has(c));
+    if(!overlap) return;
+    codes.forEach(code=>{
+      if(!selectedCodes.has(code)) counts[code] = (counts[code]||0)+1;
+    });
+  });
+  return Object.entries(counts)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,4)
+    .map(([code,score])=>{
+      const m = findMaterialByCode(code);
+      return m ? {...m, score} : null;
+    })
+    .filter(Boolean);
+}
+
+function updateStats(){
+  const totalRows = state.points.reduce((sum,p)=>sum+p.items.length,0);
+  const discovery = aggregateRows().length;
+  els.statPoints.textContent = state.points.length;
+  els.statRows.textContent = totalRows;
+  els.statDiscovery.textContent = discovery;
+}
+
+function updateMapInfo(){
+  els.mapInfo.textContent = state.copyModeId
+    ? "Kopyalama açık: haritada yeni yere dokun"
+    : "Haritaya dokunarak nokta ekle";
+}
+
+function setSheetMode(mode){
+  state.sheetMode = mode;
+  els.emptyState.classList.add("hidden");
+  els.pointPanel.classList.add("hidden");
+  els.pointsPanel.classList.add("hidden");
+  els.summaryPanel.classList.add("hidden");
+
+  if(mode === "points"){
+    els.sheetTitle.textContent = "Noktalar";
+    els.sheetSub.textContent = "Bir noktayı seç, kopyala veya sil";
+    els.pointsPanel.classList.remove("hidden");
+  } else if(mode === "summary"){
+    els.sheetTitle.textContent = "Proje Keşfi";
+    els.sheetSub.textContent = "Toplam keşif listesi ve gönderim";
+    els.summaryPanel.classList.remove("hidden");
+  } else {
+    const point = getSelectedPoint();
+    if(!point){
+      els.sheetTitle.textContent = "Nokta seç";
+      els.sheetSub.textContent = "Önce haritada bir nokta oluştur veya seç";
+      els.emptyState.classList.remove("hidden");
+    } else {
+      els.sheetTitle.textContent = point.name;
+      els.sheetSub.textContent = "Hazır set seç veya malzeme düzenle";
+      els.pointPanel.classList.remove("hidden");
     }
+  }
+}
 
-    function renderSummary() {
-      const rows = aggregateRows();
-      if (!rows.length) {
-        els.summaryBody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Henüz keşif oluşmadı</td></tr>`;
-        return;
-      }
-      els.summaryBody.innerHTML = rows.map(row => `
-        <tr class="border-t border-slate-200">
-          <td class="px-4 py-3">${row.project}</td>
-          <td class="px-4 py-3">${row.code}</td>
-          <td class="px-4 py-3">${row.material}</td>
-          <td class="px-4 py-3">${row.quantity}</td>
-        </tr>
-      `).join("");
-    }
+function setItemsTab(tab){
+  state.itemsTab = tab;
+  const itemsActive = tab === "items";
+  els.itemsTab.classList.toggle("hidden", !itemsActive);
+  els.addTab.classList.toggle("hidden", itemsActive);
+  els.tabItemsBtn.classList.toggle("active", itemsActive);
+  els.tabAddBtn.classList.toggle("active", !itemsActive);
+}
 
-    function renderSelectedPanel() {
-      const point = getSelectedPoint();
-      if (!point) {
-        els.selectedBadge.textContent = "Nokta seç";
-        els.emptyState.classList.remove("hidden");
-        els.pointPanel.classList.add("hidden");
-        return;
-      }
+function addPoint(latlng){
+  if(state.copyModeId){
+    const source = state.points.find(p=>p.id===state.copyModeId);
+    if(!source) return;
+    const clone = {
+      ...source,
+      id: uid(),
+      name: source.name + " Kopya",
+      lat: latlng.lat,
+      lng: latlng.lng,
+      items: source.items.map(i=>({ ...i, rowId: uid() }))
+    };
+    state.points.push(clone);
+    state.selectedPointId = clone.id;
+    state.copyModeId = null;
+    persist(); drawMarkers(); render();
+    setSheetMode("point"); openSheet(); toast("Kopya yeni noktaya yerleştirildi");
+    return;
+  }
 
-      els.selectedBadge.textContent = point.name;
+  const point = {
+    id: uid(),
+    name: `Nokta ${state.points.length + 1}`,
+    lat: latlng.lat,
+    lng: latlng.lng,
+    items: []
+  };
+  state.points.push(point);
+  state.selectedPointId = point.id;
+  persist(); drawMarkers(); render();
+  setSheetMode("point"); openSheet(); toast("Yeni nokta oluşturuldu");
+}
+
+function selectPoint(id){
+  state.selectedPointId = id;
+  setSheetMode("point");
+  render();
+  openSheet();
+}
+
+function updateSelectedPoint(patch){
+  state.points = state.points.map(p => p.id === state.selectedPointId ? { ...p, ...patch } : p);
+  persist(); drawMarkers(); render();
+}
+
+function removePoint(id){
+  const marker = state.markers[id];
+  if(marker){ map.removeLayer(marker); delete state.markers[id]; }
+  state.points = state.points.filter(p=>p.id!==id);
+  if(state.selectedPointId === id) state.selectedPointId = null;
+  if(state.copyModeId === id) state.copyModeId = null;
+  persist(); drawMarkers(); render();
+}
+
+function addItemsToSelected(items){
+  const point = getSelectedPoint();
+  if(!point) return;
+  const newItems = [...point.items, ...items.map(item=>({ ...item, rowId: uid() }))];
+  updateSelectedPoint({ items: newItems });
+
+  const setLog = {
+    id: uid(),
+    pointId: point.id,
+    timestamp: new Date().toISOString(),
+    items: newItems.map(x=>({ code:x.code, name:x.name, category:x.category }))
+  };
+  state.logs = [setLog, ...state.logs].slice(0,300);
+  persist(); render();
+}
+
+function addKit(id){
+  const kit = QUICK_KITS.find(k=>k.id===id);
+  if(!kit) return;
+  addItemsToSelected(kit.items);
+  setItemsTab("items");
+  toast(kit.title + " eklendi");
+}
+
+function addSingleMaterial(code){
+  const material = findMaterialByCode(code);
+  if(!material) return;
+  addItemsToSelected([{ ...material, quantity:1 }]);
+  setItemsTab("items");
+  toast(material.name + " eklendi");
+}
+
+function updateItem(rowId, qty){
+  const point = getSelectedPoint();
+  if(!point) return;
+  updateSelectedPoint({ items: point.items.map(i=>i.rowId===rowId ? { ...i, quantity:Number(qty||0) } : i) });
+}
+function removeItem(rowId){
+  const point = getSelectedPoint();
+  if(!point) return;
+  updateSelectedPoint({ items: point.items.filter(i=>i.rowId!==rowId) });
+}
+
+function drawMarkers(){
+  Object.values(state.markers).forEach(marker=>map.removeLayer(marker));
+  state.markers = {};
+  state.points.forEach(point=>{
+    const marker = L.marker([point.lat, point.lng]).addTo(map);
+    marker.bindPopup(`<div><b>${point.name}</b><br><span style="font-size:12px;color:#64748b">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}</span><br><span style="font-size:12px">${point.items.length} satır</span></div>`);
+    marker.on("click", ()=>selectPoint(point.id));
+    state.markers[point.id] = marker;
+  });
+}
+
+function renderKits(){
+  els.kitsArea.innerHTML = QUICK_KITS.map(kit=>`
+    <button class="kit" data-kit="${kit.id}">
+      <div class="emoji">${kit.emoji}</div>
+      <div class="name">${kit.title}</div>
+      <div class="desc">${kit.items.length} kalem tek dokunuş</div>
+    </button>
+  `).join("");
+  els.kitsArea.querySelectorAll("[data-kit]").forEach(btn=>{
+    btn.addEventListener("click", ()=>addKit(btn.dataset.kit));
+  });
+}
+
+function renderSuggestions(point){
+  const suggestions = getSuggestions(point.items);
+  if(!suggestions.length){
+    els.suggestionSection.classList.add("hidden");
+    els.suggestionsArea.innerHTML = "";
+    return;
+  }
+  els.suggestionSection.classList.remove("hidden");
+  els.suggestionsArea.innerHTML = suggestions.map(s=>`
+    <button class="chip" data-suggest="${s.code}">${s.name} · ${s.score}</button>
+  `).join("");
+  els.suggestionsArea.querySelectorAll("[data-suggest]").forEach(btn=>{
+    btn.addEventListener("click", ()=>addSingleMaterial(btn.dataset.suggest));
+  });
+}
+
+function renderPointItems(point){
+  if(!point.items.length){
+    els.pointItemsArea.innerHTML = `<div class="list-card">En hızlı başlangıç için üstten bir hazır set seç.</div>`;
+    return;
+  }
+  els.pointItemsArea.innerHTML = point.items.map(item=>`
+    <div class="list-card">
+      <div class="top">
+        <div>
+          <div class="name">${item.name}</div>
+          <div class="sub">${item.code}</div>
+        </div>
+        <button class="mini-btn" data-remove="${item.rowId}">Sil</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <input class="qty" type="number" min="0" value="${item.quantity}" data-qty="${item.rowId}">
+        <div class="sub" style="display:flex;align-items:center">Miktar</div>
+      </div>
+    </div>
+  `).join("");
+
+  els.pointItemsArea.querySelectorAll("[data-remove]").forEach(btn=>{
+    btn.addEventListener("click", ()=>removeItem(btn.dataset.remove));
+  });
+  els.pointItemsArea.querySelectorAll("[data-qty]").forEach(inp=>{
+    inp.addEventListener("change", ()=>updateItem(inp.dataset.qty, inp.value));
+  });
+}
+
+function renderMaterials(){
+  const q = (els.materialSearch.value || "").toLocaleLowerCase("tr");
+  const items = MATERIALS.filter(m => `${m.name} ${m.code} ${m.category}`.toLocaleLowerCase("tr").includes(q));
+  els.materialsArea.innerHTML = items.map(m=>`
+    <button class="list-card" data-material="${m.code}">
+      <div class="top">
+        <div>
+          <div class="name">${m.name}</div>
+          <div class="sub">${m.category} · ${m.code}</div>
+        </div>
+        <div class="mini-btn">Ekle</div>
+      </div>
+    </button>
+  `).join("");
+  els.materialsArea.querySelectorAll("[data-material]").forEach(btn=>{
+    btn.addEventListener("click", ()=>addSingleMaterial(btn.dataset.material));
+  });
+}
+
+function renderPointsList(){
+  if(!state.points.length){
+    els.pointsArea.innerHTML = `<div class="list-card">Henüz nokta yok. Haritaya dokunarak ilk noktayı ekle.</div>`;
+    return;
+  }
+  els.pointsArea.innerHTML = state.points.map(point=>`
+    <div class="list-card">
+      <div class="top">
+        <div>
+          <div class="name">${point.name}</div>
+          <div class="sub">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)} · ${point.items.length} satır</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="mini-btn" data-open="${point.id}">Aç</button>
+        <button class="mini-btn" data-copy="${point.id}">Kopyala</button>
+        <button class="mini-btn" data-delete="${point.id}">Sil</button>
+      </div>
+    </div>
+  `).join("");
+  els.pointsArea.querySelectorAll("[data-open]").forEach(btn=>btn.addEventListener("click", ()=>selectPoint(btn.dataset.open)));
+  els.pointsArea.querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click", ()=>{
+    state.copyModeId = btn.dataset.copy;
+    updateMapInfo(); openSheet(); toast("Haritada yeni yere dokunarak kopyalayın");
+  }));
+  els.pointsArea.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click", ()=>removePoint(btn.dataset.delete)));
+}
+
+function renderSummary(){
+  const rows = aggregateRows();
+  if(!rows.length){
+    els.summaryArea.innerHTML = `<div class="list-card">Henüz keşif oluşmadı.</div>`;
+    return;
+  }
+  els.summaryArea.innerHTML = rows.map(row=>`
+    <div class="list-card">
+      <div class="top">
+        <div>
+          <div class="name">${row.material}</div>
+          <div class="sub">${row.code}</div>
+        </div>
+        <div><b>${row.quantity}</b></div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderPointPanel(){
+  const point = getSelectedPoint();
+  if(!point){
+    setSheetMode(state.sheetMode === "summary" ? "summary" : state.sheetMode === "points" ? "points" : "point");
+    return;
+  }
+  els.pointName.value = point.name;
+  els.pointCoords.textContent = `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+  renderKits();
+  renderSuggestions(point);
+  renderPointItems(point);
+  renderMaterials();
+}
+
+function render(){
+  updateStats();
+  updateMapInfo();
+  renderPointsList();
+  renderSummary();
+  renderPointPanel();
+
+  if(state.sheetMode === "point"){
+    const point = getSelectedPoint();
+    if(!point){
+      els.sheetTitle.textContent = "Nokta seç";
+      els.sheetSub.textContent = "Önce haritada bir nokta oluştur veya seç";
+      els.emptyState.classList.remove("hidden");
+      els.pointPanel.classList.add("hidden");
+      els.pointsPanel.classList.add("hidden");
+      els.summaryPanel.classList.add("hidden");
+    } else {
+      els.sheetTitle.textContent = point.name;
+      els.sheetSub.textContent = "Hazır set seç veya malzeme düzenle";
       els.emptyState.classList.add("hidden");
       els.pointPanel.classList.remove("hidden");
-      els.pointName.value = point.name;
-      els.pointCoords.textContent = `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
-
-      renderKits();
-      renderSuggestions(point);
-      renderMaterialsList();
-      renderPointItems(point);
+      els.pointsPanel.classList.add("hidden");
+      els.summaryPanel.classList.add("hidden");
     }
+  }
+}
 
-    function render() {
-      updateMapInfo();
-      renderSelectedPanel();
-      renderSummary();
-      updateStats();
-    }
+function exportCsvAndMail(){
+  const rows = aggregateRows();
+  if(!rows.length){
+    toast("Henüz keşif oluşmadı");
+    return;
+  }
 
-    function exportCsvAndMail() {
-      const rows = aggregateRows();
-      if (!rows.length) {
-        showToast("Henüz keşif oluşmadı");
-        return;
-      }
+  const csv = [
+    ["Proje","Kod","Malzeme","Miktar"],
+    ...rows.map(r=>[r.project, r.code, r.material, r.quantity])
+  ].map(line=>line.map(cell=>`"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
 
-      const csv = [
-        ["Proje", "Kod", "Malzeme", "Miktar"],
-        ...rows.map(r => [r.project, r.code, r.material, r.quantity])
-      ].map(line => line.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = (els.projectName.value || "proje").replace(/\s+/g,"_") + "_kesif.csv";
+  a.click();
+  URL.revokeObjectURL(url);
 
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = (els.projectName.value || "proje").replace(/\s+/g, "_") + "_kesif.csv";
-      a.click();
-      URL.revokeObjectURL(url);
+  const body = [
+    `${els.projectName.value || "Proje"} için keşif özeti ektedir.`,
+    "",
+    ...rows.map(r=>`- ${r.material} (${r.code}): ${r.quantity}`)
+  ].join("\n");
 
-      const body = [
-        `${els.projectName.value || "Proje"} için keşif özeti ektedir.`,
-        "",
-        ...rows.map(r => `- ${r.material} (${r.code}): ${r.quantity}`)
-      ].join("\n");
+  window.location.href = `mailto:${encodeURIComponent(els.email.value || "")}?subject=${encodeURIComponent((els.projectName.value || "Proje") + " - Keşif Listesi")}&body=${encodeURIComponent(body)}`;
+  toast("CSV indirildi, mail taslağı açıldı");
+}
 
-      window.location.href = `mailto:${encodeURIComponent(els.email.value || "")}?subject=${encodeURIComponent((els.projectName.value || "Proje") + " - Keşif Listesi")}&body=${encodeURIComponent(body)}`;
-      showToast("CSV indirildi, mail taslağı açıldı");
-    }
+els.projectName.addEventListener("input", ()=>{ persist(); render(); });
+els.email.addEventListener("input", persist);
+els.locateBtn.addEventListener("click", ()=>{
+  if(!navigator.geolocation){
+    toast("Tarayıcı konumu desteklemiyor");
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const latlng = [pos.coords.latitude, pos.coords.longitude];
+    map.setView(latlng, 18);
+    if(state.userLocationMarker) map.removeLayer(state.userLocationMarker);
+    state.userLocationMarker = L.marker(latlng).addTo(map).bindPopup("Mevcut konum");
+    toast("Konum bulundu");
+  }, ()=>toast("Konum alınamadı"));
+});
 
-    els.toggleViewBtn.addEventListener("click", toggleSummaryView);
-    els.floatingToggleBtn.addEventListener("click", toggleSummaryView);
-    els.locateBtn.addEventListener("click", () => {
-      if (!navigator.geolocation) {
-        showToast("Tarayıcı konumu desteklemiyor");
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const latlng = [pos.coords.latitude, pos.coords.longitude];
-          map.setView(latlng, 18);
-          if (state.userLocationMarker) map.removeLayer(state.userLocationMarker);
-          state.userLocationMarker = L.marker(latlng).addTo(map).bindPopup("Mevcut konum");
-          showToast("Konum bulundu");
-        },
-        () => showToast("Konum alınamadı")
-      );
-    });
+els.showPointsBtn.addEventListener("click", ()=>{ setSheetMode("points"); openSheet(); });
+els.expandSheetBtn.addEventListener("click", ()=>openSheet());
+els.closeSheetBtn.addEventListener("click", ()=>closeSheet());
 
-    els.sendBtn.addEventListener("click", exportCsvAndMail);
-    els.projectName.addEventListener("input", () => { persist(); renderSummary(); updateStats(); });
-    els.email.addEventListener("input", persist);
-    els.materialSearch.addEventListener("input", renderMaterialsList);
-    els.toggleMaterialsBtn.addEventListener("click", () => {
-      state.showAllMaterials = !state.showAllMaterials;
-      els.allMaterialsWrap.classList.toggle("hidden", !state.showAllMaterials);
-      els.toggleMaterialsIcon.textContent = state.showAllMaterials ? "▼" : "▶";
-    });
+els.pointsModeBtn.addEventListener("click", ()=>{ setSheetMode("points"); openSheet(); });
+els.summaryModeBtn.addEventListener("click", ()=>{ setSheetMode("summary"); openSheet(); exportCsvAndMail(); });
 
-    els.pointName.addEventListener("input", e => updateSelectedPoint({ name: e.target.value }));
-    els.copyPointBtn.addEventListener("click", () => {
-      const point = getSelectedPoint();
-      if (!point) return;
-      state.copyModeId = point.id;
-      updateMapInfo();
-      showToast("Haritada yeni yere dokunarak kopyalayın");
-    });
-    els.deletePointBtn.addEventListener("click", () => {
-      const point = getSelectedPoint();
-      if (!point) return;
-      removePoint(point.id);
-    });
+els.tabItemsBtn.addEventListener("click", ()=>setItemsTab("items"));
+els.tabAddBtn.addEventListener("click", ()=>setItemsTab("add"));
+els.materialSearch.addEventListener("input", renderMaterials);
 
-    const map = L.map('map').setView([39.92, 32.85], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap katkıcıları'
-    }).addTo(map);
+els.pointName.addEventListener("input", e=>updateSelectedPoint({ name:e.target.value }));
+els.copyPointBtn.addEventListener("click", ()=>{
+  const point = getSelectedPoint();
+  if(!point) return;
+  state.copyModeId = point.id;
+  updateMapInfo();
+  toast("Haritada yeni yere dokunarak kopyalayın");
+  closeSheet();
+});
+els.deletePointBtn.addEventListener("click", ()=>{
+  const point = getSelectedPoint();
+  if(!point) return;
+  removePoint(point.id);
+  toast("Nokta silindi");
+});
 
-    map.on("click", e => addPoint(e.latlng));
+const map = L.map('map', { zoomControl:false }).setView([39.92, 32.85], 6);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap katkıcıları'
+}).addTo(map);
+map.on("click", e=>addPoint(e.latlng));
 
-    drawMarkers();
-    render();
-  </script>
+drawMarkers();
+render();
+</script>
 </body>
 </html>
