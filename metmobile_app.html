@@ -10,113 +10,120 @@
     :root{
       --bg:#f3f6f8; --card:#fff; --text:#0f172a; --muted:#64748b; --line:#e2e8f0; --soft:#f8fafc;
       --primary:#0f172a; --green:#16a34a; --greenbg:#f0fdf4; --orange:#c2410c; --orangebg:#fff7ed;
-      --shadow:0 10px 30px rgba(15,23,42,.10); --safe:env(safe-area-inset-bottom,0px);
-      --bar-h: 0px;
+      --shadow:0 10px 30px rgba(15,23,42,.12);
     }
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
     body{overflow:hidden}
     button,input,select{font:inherit}
     .hidden{display:none!important}
-    .app{height:100dvh;display:flex;flex-direction:column}
-    #map{height:100%;width:100%}
-    .overlay-top{position:fixed;left:12px;right:12px;top:12px;z-index:700;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
-    .overlay-top>*{pointer-events:auto}
-    .pill{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:999px;padding:10px 12px;box-shadow:var(--shadow);font-size:12px;font-weight:800}
-    .fab-stack{position:fixed;right:12px;bottom:20px;z-index:700;display:flex;flex-direction:column;gap:10px}
-    .fab{width:56px;height:56px;border-radius:999px;border:none;box-shadow:var(--shadow);background:#fff;font-size:18px;font-weight:800}
-    .fab.primary{background:var(--primary);color:#fff}
-    .main{background:var(--primary);color:#fff}
-    .ghost{background:#eef2f7;color:var(--text)}
-    .sheet{
-      position:fixed;left:0;right:0;bottom:0;z-index:750;background:var(--card);border-top-left-radius:28px;border-top-right-radius:28px;
-      box-shadow:0 -10px 40px rgba(15,23,42,.14);border:1px solid var(--line);
-      transform:translateY(calc(100% - 110px));transition:transform .24s ease;
-      max-height:82dvh; padding-bottom:calc(24px + var(--safe));
+    #map{position:fixed;inset:0;z-index:1}
+    .overlay-top{
+      position:fixed;left:12px;right:12px;top:12px;z-index:700;
+      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none
     }
-    .sheet.half{transform:translateY(44%)}
-    .sheet.expanded{transform:translateY(0)}
-
-    .sheet.peek{transform:translateY(calc(100% - 110px))}
-    .sheet.mid{transform:translateY(44%)}
-    .sheet.full{transform:translateY(0)}
-
-    .sheet-handle-wrap{display:flex;justify-content:center;padding:12px 0 6px;cursor:grab;touch-action:none}
-    .sheet-handle{width:46px;height:5px;background:#cbd5e1;border-radius:999px}
-    .sheet-header{padding:10px 14px 8px;position:sticky;top:0;background:linear-gradient(to bottom, rgba(255,255,255,.98), rgba(255,255,255,.94));backdrop-filter: blur(6px);z-index:2}
-    .sheet-title{display:flex;justify-content:space-between;align-items:start;gap:10px}
-    .sheet-title h2{margin:0;font-size:16px}
-    .sheet-sub{font-size:12px;color:var(--muted);margin-top:2px}
-    .sheet-content{padding:0 14px 0;overflow:auto;max-height:calc(82dvh - 72px - 24px)}
+    .overlay-top>*{pointer-events:auto}
+    .pill{
+      background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:999px;
+      padding:10px 12px;box-shadow:var(--shadow);font-size:12px;font-weight:800
+    }
+    .top-right{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .fab-stack{position:fixed;right:12px;bottom:20px;z-index:710;display:flex;flex-direction:column;gap:10px}
+    .fab{width:56px;height:56px;border:none;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-size:18px;font-weight:900}
+    .fab.primary{background:var(--primary);color:#fff}
+    .drawer{
+      position:fixed;top:0;right:0;bottom:0;width:min(92vw,430px);z-index:720;
+      background:var(--card);border-left:1px solid var(--line);box-shadow:-10px 0 40px rgba(15,23,42,.16);
+      transform:translateX(100%);transition:transform .24s ease;display:flex;flex-direction:column
+    }
+    .drawer.open{transform:translateX(0)}
+    .drawer-header{
+      padding:14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.97);backdrop-filter:blur(6px)
+    }
+    .drawer-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .drawer-title h2{margin:0;font-size:16px}
+    .drawer-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .drawer-menu{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .drawer-body{padding:12px 14px 16px;overflow:auto;flex:1}
     .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px;box-shadow:var(--shadow)}
     .soft{background:var(--soft)}
     .input{width:100%;border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:#fff;outline:none}
     .row{display:flex;gap:8px}.row>*{min-width:0}
     .btn{border:none;border-radius:16px;padding:12px 14px;font-weight:800}
     .btn-outline{background:#fff;border:1px solid var(--line)} .btn-main{background:var(--primary);color:#fff}
+    .mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:800}
     .section{margin-top:14px}.section h3{margin:0 0 8px;font-size:13px}
+    .tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+    .tabs button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 10px;font-weight:800}
+    .tabs .active{background:var(--primary);color:#fff;border-color:var(--primary)}
     .kits{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
     .kit{border:1px solid var(--line);background:var(--soft);border-radius:18px;padding:12px;text-align:left}
     .kit .emoji{font-size:22px;margin-bottom:6px}.kit .title{font-size:13px;font-weight:800}.kit .sub{font-size:11px;color:var(--muted);margin-top:2px}
     .chips{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 12px;font-size:12px;font-weight:800}
     .list{display:flex;flex-direction:column;gap:8px}
     .item{border:1px solid var(--line);border-radius:18px;background:#fff;padding:11px 12px}
-    .item-top{display:flex;justify-content:space-between;align-items:start;gap:10px}.item-name{font-size:14px;font-weight:800}.item-sub{font-size:11px;color:var(--muted);margin-top:2px}
-    .mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:800}
+    .item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .item-name{font-size:14px;font-weight:800}.item-sub{font-size:11px;color:var(--muted);margin-top:2px}
     .qty{width:82px;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
     .tag{display:inline-flex;align-items:center;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800}
     .tag.green{background:var(--greenbg);color:var(--green)} .tag.orange{background:var(--orangebg);color:var(--orange)}
-    .tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.tabs button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 10px;font-weight:800}.tabs .active{background:var(--primary);color:#fff;border-color:var(--primary)}
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:1000;background:var(--primary);color:#fff;padding:12px 14px;border-radius:999px;font-size:13px;box-shadow:var(--shadow);max-width:calc(100vw - 32px);text-align:center}
-    .modal{position:fixed;inset:0;z-index:1200;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:16px}
-    .modal-card{width:min(100%,480px);max-height:95dvh;overflow:auto;background:#fff;border-radius:28px;border:1px solid var(--line);padding:16px;box-shadow:var(--shadow)}
+    .point-title{font-size:14px;font-weight:800}.point-box{border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}
+    .badge{background:var(--soft);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+    .toast{
+      position:fixed;left:50%;transform:translateX(-50%);bottom:20px;z-index:1000;background:var(--primary);color:#fff;padding:12px 14px;border-radius:999px;font-size:13px;box-shadow:var(--shadow);max-width:calc(100vw - 32px);text-align:center
+    }
+    .modal{
+      position:fixed;inset:0;z-index:1200;background:rgba(15,23,42,.45);display:flex;align-items:center;justify-content:center;padding:16px
+    }
+    .modal-card{
+      width:min(100%,480px);max-height:95dvh;overflow:auto;background:#fff;border-radius:28px;border:1px solid var(--line);padding:16px;box-shadow:var(--shadow)
+    }
     .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
     .role{border:2px solid var(--line);border-radius:20px;padding:14px;text-align:left;background:#fff}
     .role.active{border-color:var(--primary);background:var(--soft)}
     .divider{height:1px;background:var(--line);margin:12px 0}
-    .summary-head{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
-    .point-title{font-size:14px;font-weight:800}
-    .point-box{border:1px solid var(--line);border-radius:18px;padding:10px;background:#fff}
-    .badge{background:var(--soft);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
-    .top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .top-actions .mini{flex:1}
-    @media (min-width:900px){body{overflow:auto}.app{max-width:520px;margin:0 auto;border-left:1px solid #dbe2ea;border-right:1px solid #dbe2ea}}
+    @media (min-width:900px){
+      body{overflow:auto}
+      #map{left:50%;transform:translateX(-50%);max-width:520px;border-left:1px solid #dbe2ea;border-right:1px solid #dbe2ea}
+      .overlay-top{left:50%;width:calc(520px - 24px);margin-left:-260px;right:auto}
+      .fab-stack{left:50%;right:auto;margin-left:204px}
+      .drawer{left:50%;right:auto;margin-left:-260px}
+      .toast{left:50%}
+    }
   </style>
 </head>
 <body>
-<div class="app">
+  <div id="map"></div>
+
   <div class="overlay-top">
-    <div id="mapInfo" class="pill">Haritaya dokunarak nokta ekle</div>
-    <div class="top-actions">
+    <div id="mapInfo" class="pill">Önce proje seç</div>
+    <div class="top-right">
       <button id="switchRoleBtn" class="pill">Rol Değiştir</button>
       <button id="locateBtn" class="pill">Konumum</button>
     </div>
   </div>
 
-  <div id="map"></div>
-
   <div class="fab-stack">
     <button id="projectsBtn" class="fab">≡</button>
-    <button id="expandBtn" class="fab primary">↑</button>
+    <button id="openDrawerBtn" class="fab primary">›</button>
   </div>
 
-  <div id="sheet" class="sheet mid">
-    <div class="sheet-handle-wrap"><div class="sheet-handle"></div></div>
-    <div class="sheet-header">
-      <div class="sheet-title">
+  <div id="drawer" class="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
         <div>
-          <h2 id="sheetTitle">Hazır</h2>
-          <div id="sheetSub" class="sheet-sub">İşlem paneli</div>
+          <h2 id="drawerTitle">Hazır</h2>
+          <div id="drawerSub" class="drawer-sub">İşlem paneli</div>
         </div>
-        <div class="row" style="align-items:center">
-          <button id="menuProjectsBtn" class="mini">Noktalar</button>
-          <button id="menuSummaryBtn" class="mini">Çıktı</button>
-          <button id="closeSheetBtn" class="mini">Kapat</button>
-        </div>
+        <button id="closeDrawerBtn" class="mini">Kapat</button>
+      </div>
+      <div class="drawer-menu">
+        <button id="menuProjectsBtn" class="mini">Noktalar</button>
+        <button id="menuSummaryBtn" class="mini">Çıktı</button>
       </div>
     </div>
-    <div class="sheet-content">
-      <div id="emptyPanel" class="card">Haritaya dokunarak yeni nokta oluştur veya mevcut bir noktaya dokun.</div>
+    <div class="drawer-body">
+      <div id="emptyPanel" class="card">Önce proje seçin. Proje seçildikten sonra sadece o projedeki noktalar görünür.</div>
 
       <div id="chefPanel" class="hidden">
         <div class="card soft">
@@ -127,7 +134,6 @@
             <button id="deletePointBtn" class="btn btn-outline" style="flex:1">Sil</button>
           </div>
         </div>
-
         <div class="section"><h3>Hazır Malzemeler</h3><div id="kitsArea" class="kits"></div></div>
         <div id="suggestionSection" class="section hidden"><h3>Malzeme Önerileri</h3><div id="suggestionsArea" class="chips"></div></div>
         <div class="section"><div class="tabs"><button id="tabCurrentBtn" class="active">Bu Nokta</button><button id="tabAddBtn">Malzeme Ekle</button></div></div>
@@ -137,16 +143,20 @@
 
       <div id="engineerPanel" class="hidden">
         <div class="card soft">
-          <div class="summary-head">
-            <div><div class="point-title" id="engPointName">Nokta</div><div id="engPointCoords" class="item-sub"></div></div>
-            <button id="approvePointBtn" class="btn btn-main">Onayla</button>
+          <div class="item-top">
+            <div>
+              <div class="point-title" id="engPointName">Nokta</div>
+              <div id="engPointCoords" class="item-sub"></div>
+            </div>
           </div>
-          <div class="item-sub" style="margin-top:8px">Onaylanan kalemler kilitlenir. Sonradan eklenenler ilave keşif olarak görünür.</div>
+          <div class="item-sub" style="margin-top:8px">Malzemeleri tek tek onaylayabilirsiniz. Onaylanan kalemler kilitlenir.</div>
         </div>
         <div class="section"><h3>Bu Noktanın Kalemleri</h3><div id="engineerItemsArea" class="list"></div></div>
       </div>
 
-      <div id="projectsPanel" class="hidden"><div class="section" style="margin-top:0"><h3>Projedeki Noktalar</h3><div id="projectsArea" class="list"></div></div></div>
+      <div id="projectsPanel" class="hidden">
+        <div class="section" style="margin-top:0"><h3>Projedeki Noktalar</h3><div id="projectsArea" class="list"></div></div>
+      </div>
 
       <div id="summaryPanel" class="hidden">
         <div class="section" style="margin-top:0">
@@ -157,28 +167,27 @@
         </div>
         <div class="section"><h3>Nokta Bazlı Çıktı</h3><div id="summaryArea" class="list"></div></div>
       </div>
-      <div style="height:32px"></div>
+      <div style="height:12px"></div>
     </div>
   </div>
-
-  
 
   <div id="toast" class="toast hidden"></div>
 
   <div id="onboarding" class="modal hidden">
     <div class="modal-card">
       <div style="font-size:22px;font-weight:900">Başlangıç</div>
-      <div class="item-sub" style="margin-top:4px">İlk girişte bilgileri alacağız. Sonrasında bu alanlar görünmeyecek.</div>
+      <div class="item-sub" style="margin-top:4px">Rol seçin ve projeyi açın.</div>
 
       <div class="role-grid">
-        <button data-role="chief" class="role active"><div style="font-weight:900">Şantiye Şefi</div><div class="item-sub">Nokta ve malzeme girişi yapar</div></button>
-        <button data-role="engineer" class="role"><div style="font-weight:900">Kontrol Mühendisi</div><div class="item-sub">Projeyi açar, onaylar ve hakedişi kilitler</div></button>
+        <button data-role="chief" class="role active"><div style="font-weight:900">Şantiye Şefi</div><div class="item-sub">Mevcut projeyi açar, revize eder, malzeme ekler</div></button>
+        <button data-role="engineer" class="role"><div style="font-weight:900">Kontrol Mühendisi</div><div class="item-sub">Projeyi açar, malzemeleri tek tek onaylar</div></button>
       </div>
 
       <div class="divider"></div>
 
       <div id="chiefForm">
-        <div class="section" style="margin-top:0"><h3>Yeni / Mevcut Proje</h3><input id="obProjectName" class="input" placeholder="Proje adı" /></div>
+        <div class="section" style="margin-top:0"><h3>Proje Seç veya Oluştur</h3><select id="obChiefProjectSelect" class="input"></select></div>
+        <div class="section"><h3>Yeni proje adı</h3><input id="obProjectName" class="input" placeholder="Boş bırakılırsa seçili proje açılır" /></div>
         <div class="section"><h3>Mail</h3><input id="obEmail" class="input" placeholder="Mail adresi" /></div>
         <div class="section"><h3>Konum</h3><div class="row"><input id="obLocationText" class="input" placeholder="Konum hazır değil" readonly style="flex:1" /><button id="obGetLocationBtn" class="btn btn-outline">Al</button></div></div>
       </div>
@@ -191,282 +200,627 @@
       <div class="section"><button id="startBtn" class="btn btn-main" style="width:100%">Devam Et</button></div>
     </div>
   </div>
-</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script>
-const QUICK_KITS = [
-  { id:"kit-beton", title:"Beton Direk", emoji:"🧱", items:[{ code:"1.001", name:"Beton Direk", category:"Direk", quantity:1 },{ code:"1.101", name:"AG Travers", category:"Travers", quantity:1 },{ code:"1.201", name:"AG İzolatör", category:"İzolatör", quantity:3 },{ code:"1.401", name:"Bağ Teli", category:"Aksesuar", quantity:1 }]},
-  { id:"kit-demir", title:"Demir Direk", emoji:"🗼", items:[{ code:"1.002", name:"Demir Direk", category:"Direk", quantity:1 },{ code:"1.102", name:"OG Travers", category:"Travers", quantity:1 },{ code:"1.202", name:"OG İzolatör", category:"İzolatör", quantity:3 },{ code:"1.403", name:"Civata Seti", category:"Aksesuar", quantity:1 }]},
-  { id:"kit-aydinlatma", title:"Aydınlatma", emoji:"💡", items:[{ code:"1.003", name:"Aydınlatma Direği", category:"Direk", quantity:1 },{ code:"1.301", name:"AG İletken", category:"İletken", quantity:1 },{ code:"1.402", name:"Kelepçe", category:"Aksesuar", quantity:2 }]},
-  { id:"kit-demontaj", title:"Demontaj", emoji:"♻️", items:[{ code:"6.001", name:"Demontaj Direk", category:"Demontaj", quantity:1 },{ code:"6.101", name:"Demontaj Travers", category:"Demontaj", quantity:1 },{ code:"6.201", name:"Demontaj İzolatör", category:"Demontaj", quantity:3 }]}
-];
-const MATERIALS = [
-  { code:"1.001", name:"Beton Direk", category:"Direk" },{ code:"1.002", name:"Demir Direk", category:"Direk" },{ code:"1.003", name:"Aydınlatma Direği", category:"Direk" },
-  { code:"1.101", name:"AG Travers", category:"Travers" },{ code:"1.102", name:"OG Travers", category:"Travers" },{ code:"1.201", name:"AG İzolatör", category:"İzolatör" },{ code:"1.202", name:"OG İzolatör", category:"İzolatör" },
-  { code:"1.301", name:"AG İletken", category:"İletken" },{ code:"1.302", name:"OG İletken", category:"İletken" },{ code:"1.401", name:"Bağ Teli", category:"Aksesuar" },{ code:"1.402", name:"Kelepçe", category:"Aksesuar" },{ code:"1.403", name:"Civata Seti", category:"Aksesuar" },
-  { code:"6.001", name:"Demontaj Direk", category:"Demontaj" },{ code:"6.101", name:"Demontaj Travers", category:"Demontaj" },{ code:"6.201", name:"Demontaj İzolatör", category:"Demontaj" }
-];
-const STORAGE = { projects:"mm-projects", session:"mm-session" };
-const state = { projects:load(STORAGE.projects, {}), session:load(STORAGE.session, null), selectedPointId:null, copyModeId:null, markers:{}, sheetMode:"point", tab:"current", userLocationMarker:null, onboardingRole:"chief", onboardingLocation:null };
-const $ = id => document.getElementById(id);
-const els = {
-  mapInfo:$("mapInfo"), locateBtn:$("locateBtn"), projectsBtn:$("projectsBtn"), expandBtn:$("expandBtn"), switchRoleBtn:$("switchRoleBtn"),
-  sheet:$("sheet"), closeSheetBtn:$("closeSheetBtn"), sheetTitle:$("sheetTitle"), sheetSub:$("sheetSub"),
-  emptyPanel:$("emptyPanel"), chefPanel:$("chefPanel"), engineerPanel:$("engineerPanel"), projectsPanel:$("projectsPanel"), summaryPanel:$("summaryPanel"),
-  pointName:$("pointName"), pointCoords:$("pointCoords"), copyPointBtn:$("copyPointBtn"), deletePointBtn:$("deletePointBtn"),
-  kitsArea:$("kitsArea"), suggestionSection:$("suggestionSection"), suggestionsArea:$("suggestionsArea"),
-  tabCurrentBtn:$("tabCurrentBtn"), tabAddBtn:$("tabAddBtn"), currentTab:$("currentTab"), addTab:$("addTab"), chefItemsArea:$("chefItemsArea"), materialSearch:$("materialSearch"), materialsArea:$("materialsArea"),
-  engPointName:$("engPointName"), engPointCoords:$("engPointCoords"), approvePointBtn:$("approvePointBtn"), engineerItemsArea:$("engineerItemsArea"),
-  projectsArea:$("projectsArea"), summaryArea:$("summaryArea"), pointsModeBtn:$("pointsModeBtn"), summaryModeBtn:$("summaryModeBtn"), downloadCsvBtn:$("downloadCsvBtn"), sendMailBtn:$("sendMailBtn"), toast:$("toast"),
-  onboarding:$("onboarding"), chiefForm:$("chiefForm"), engineerForm:$("engineerForm"), obProjectName:$("obProjectName"), obEmail:$("obEmail"), obLocationText:$("obLocationText"), obGetLocationBtn:$("obGetLocationBtn"), obProjectSelect:$("obProjectSelect"), obEmailEngineer:$("obEmailEngineer"), startBtn:$("startBtn")
-};
-function load(key, fallback){ try{ const r=localStorage.getItem(key); return r?JSON.parse(r):fallback; } catch { return fallback; } }
-function saveAll(){ localStorage.setItem(STORAGE.projects, JSON.stringify(state.projects)); localStorage.setItem(STORAGE.session, JSON.stringify(state.session)); }
-function toast(msg){ els.toast.textContent=msg; els.toast.classList.remove("hidden"); clearTimeout(window.__t); window.__t=setTimeout(()=>els.toast.classList.add("hidden"),2200); }
-function uid(){ return Date.now()+"-"+Math.random().toString(36).slice(2,9); }
-function project(){ return state.session ? state.projects[state.session.projectId] || null : null; }
-function points(){ const p=project(); return p ? p.points||[] : []; }
-function selectedPoint(){ return points().find(p=>p.id===state.selectedPointId) || null; }
-function setProject(p){ p.points=p.points||[]; p.approvals=p.approvals||{}; p.logs=p.logs||[]; state.projects[p.id]=p; saveAll(); }
-function approvalMap(pointId){ const p=project(); return p && p.approvals && p.approvals[pointId] ? p.approvals[pointId] : {}; }
-function setSheetSnap(mode){
-  els.sheet.classList.remove("peek","mid","full","half","expanded");
-  if(mode==="full") els.sheet.classList.add("full");
-  else if(mode==="mid") els.sheet.classList.add("mid");
-  else els.sheet.classList.add("peek");
-}
-function openSheet(mode="mid"){ setSheetSnap(mode==="expanded" ? "full" : mode==="half" ? "mid" : mode); }
-function closeSheet(){ setSheetSnap("peek"); }
-function updateMapInfo(){
-  const roleText = state.session ? (state.session.role==="chief" ? "Şantiye Şefi" : "Kontrol Mühendisi") : "Rol seç";
-  els.switchRoleBtn.textContent = roleText + " · Değiştir";
-  els.mapInfo.textContent = !state.session ? "Başlangıç bilgilerini gir" : state.copyModeId ? "Kopyalama açık: yeni yere dokun" : state.session.role==="chief" ? "Haritaya dokunarak nokta ekle" : "Noktalara dokunarak kontrol et";
-}
-function setSheetMode(mode){
-  state.sheetMode=mode;
-  [els.emptyPanel,els.chefPanel,els.engineerPanel,els.projectsPanel,els.summaryPanel].forEach(x=>x.classList.add("hidden"));
-  if(mode==="projects"){ els.sheetTitle.textContent="Noktalar"; els.sheetSub.textContent="Projedeki noktalar"; els.projectsPanel.classList.remove("hidden"); return; }
-  if(mode==="summary"){ els.sheetTitle.textContent="Çıktı"; els.sheetSub.textContent="Nokta bazlı keşif çıktısı"; els.summaryPanel.classList.remove("hidden"); return; }
-  const p=selectedPoint();
-  if(!p){ els.sheetTitle.textContent="Nokta seç"; els.sheetSub.textContent="Haritaya dokunarak yeni nokta oluştur veya seç"; els.emptyPanel.classList.remove("hidden"); return; }
-  if(state.session && state.session.role==="chief"){ els.sheetTitle.textContent=p.name; els.sheetSub.textContent="Hazır malzeme veya tekli ekleme"; els.chefPanel.classList.remove("hidden"); }
-  else { els.sheetTitle.textContent=p.name; els.sheetSub.textContent="Onay ve ilave keşif kontrolü"; els.engineerPanel.classList.remove("hidden"); }
-}
-function drawMarkers(){
-  Object.values(state.markers).forEach(m=>map.removeLayer(m)); state.markers={};
-  points().forEach(p=>{
-    const marker=L.marker([p.lat,p.lng]).addTo(map);
-    marker.bindPopup(`<div><b>${p.name}</b><br><span style="font-size:12px;color:#64748b">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</span><br><span style="font-size:12px">${p.items.length} satır</span></div>`);
-    marker.on("click",()=>selectPoint(p.id));
-    state.markers[p.id]=marker;
-  });
-}
-function createProject(name,email,location){ return { id:"prj-"+uid(), name, email, location, points:[], approvals:{}, logs:[] }; }
-function findMaterial(code){ return MATERIALS.find(m=>m.code===code)||null; }
-function getSuggestions(items){
-  const p=project(); const selectedCodes=new Set(items.map(x=>x.code)); const counts={};
-  (p.logs||[]).forEach(log=>{ const codes=log.codes||[]; if(!codes.some(c=>selectedCodes.has(c))) return; codes.forEach(code=>{ if(!selectedCodes.has(code)) counts[code]=(counts[code]||0)+1; }); });
-  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([code,score])=>({ ...findMaterial(code), score })).filter(Boolean);
-}
-function logPointItems(point){ const p=project(); p.logs.unshift({ pointId:point.id, time:new Date().toISOString(), codes:point.items.map(i=>i.code) }); p.logs=p.logs.slice(0,300); setProject(p); }
-function addPoint(latlng){
-  const p=project(); if(!p) return;
-  if(state.session.role==="engineer"){ toast("Kontrol mühendisi yeni nokta eklemez"); return; }
-  if(state.copyModeId){
-    const source=p.points.find(x=>x.id===state.copyModeId); if(!source) return;
-    const clone={ ...source, id:uid(), name:source.name+" Kopya", lat:latlng.lat, lng:latlng.lng, items:source.items.map(i=>({...i,rowId:uid()})) };
-    p.points.push(clone); state.selectedPointId=clone.id; state.copyModeId=null; setProject(p); render(); setSheetMode("point"); openSheet("mid"); toast("Nokta kopyalandı"); return;
-  }
-  const point={ id:uid(), name:`Nokta ${p.points.length+1}`, lat:latlng.lat, lng:latlng.lng, items:[] };
-  p.points.push(point); state.selectedPointId=point.id; setProject(p); render(); setSheetMode("point"); openSheet("mid"); toast("Yeni nokta oluşturuldu");
-}
-function selectPoint(id){ state.selectedPointId=id; setSheetMode("point"); render(); openSheet("mid"); }
-function updateSelectedPoint(patch){ const p=project(); const point=selectedPoint(); if(!p||!point) return; p.points=p.points.map(x=>x.id===point.id?{...x,...patch}:x); setProject(p); render(); }
-function removePoint(id){ const p=project(); if(!p) return; const marker=state.markers[id]; if(marker){ map.removeLayer(marker); delete state.markers[id]; } p.points=p.points.filter(x=>x.id!==id); delete p.approvals[id]; if(state.selectedPointId===id) state.selectedPointId=null; if(state.copyModeId===id) state.copyModeId=null; setProject(p); render(); }
-function addItemsToSelected(items){
-  const p=project(); const point=selectedPoint(); if(!p||!point) return;
-  const newItems=[...point.items];
-  items.forEach(item=>{ const ex=newItems.find(x=>x.code===item.code); if(ex) ex.quantity=Number(ex.quantity||0)+Number(item.quantity||1); else newItems.push({...item,rowId:uid()}); });
-  p.points=p.points.map(x=>x.id===point.id?{...x,items:newItems}:x); setProject(p); logPointItems({ ...point, items:newItems }); render(); toast("Malzeme eklendi");
-}
-function updateItem(rowId, qty){ const p=project(); const point=selectedPoint(); if(!p||!point) return; const items=point.items.map(i=>i.rowId===rowId?{...i,quantity:Number(qty||0)}:i); p.points=p.points.map(x=>x.id===point.id?{...x,items}:x); setProject(p); render(); }
-function removeItem(rowId){ const p=project(); const point=selectedPoint(); if(!p||!point) return; const items=point.items.filter(i=>i.rowId!==rowId); p.points=p.points.map(x=>x.id===point.id?{...x,items}:x); setProject(p); render(); }
-function approveSelectedPoint(){ const p=project(); const point=selectedPoint(); if(!p||!point) return; p.approvals[point.id]=p.approvals[point.id]||{}; point.items.forEach(i=>{ p.approvals[point.id][i.code]=Number(i.quantity||0); }); setProject(p); render(); toast("Nokta onaylandı ve kilitlendi"); }
-function pointOutputGroups(){
-  return points().map(point=>{
-    const ap=approvalMap(point.id);
-    const rows=point.items.map(i=>{ const approved=Number(ap[i.code]||0), current=Number(i.quantity||0), extra=Math.max(current-approved,0); return { code:i.code, material:i.name, current, approved, extra }; }).filter(r=>r.current>0||r.approved>0||r.extra>0);
-    return { point, rows };
-  }).filter(g=>g.rows.length);
-}
-function exportRows(){ const p=project(); const rows=[]; pointOutputGroups().forEach(g=>g.rows.forEach(r=>rows.push([p.name,g.point.name,r.code,r.material,r.current,r.approved,r.extra]))); return rows; }
-function downloadCsv(){ const rows=[["Proje","Nokta","Kod","Malzeme","Toplam","Onaylı","İlave"], ...exportRows()]; const csv=rows.map(line=>line.map(cell=>`"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n"); const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`${project().name.replace(/\s+/g,"_")}_nokta_bazli_kesif.csv`; a.click(); URL.revokeObjectURL(url); }
-function sendMail(){ const rows=exportRows(); const lines=[`${project().name} proje keşif özeti:`, ""]; let prev=""; rows.forEach(r=>{ if(r[1]!==prev){ lines.push(`### ${r[1]}`); prev=r[1]; } lines.push(`- ${r[3]} (${r[2]}) | Toplam: ${r[4]} | Onaylı: ${r[5]} | İlave: ${r[6]}`); }); window.location.href=`mailto:${encodeURIComponent(state.session.email || project().email || "")}?subject=${encodeURIComponent(project().name + " - Nokta Bazlı Keşif")}&body=${encodeURIComponent(lines.join("\n"))}`; }
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const QUICK_KITS = [
+      { id:"kit-beton", title:"Beton Direk", emoji:"🧱", items:[{ code:"1.001", name:"Beton Direk", category:"Direk", quantity:1 },{ code:"1.101", name:"AG Travers", category:"Travers", quantity:1 },{ code:"1.201", name:"AG İzolatör", category:"İzolatör", quantity:3 },{ code:"1.401", name:"Bağ Teli", category:"Aksesuar", quantity:1 }]},
+      { id:"kit-demir", title:"Demir Direk", emoji:"🗼", items:[{ code:"1.002", name:"Demir Direk", category:"Direk", quantity:1 },{ code:"1.102", name:"OG Travers", category:"Travers", quantity:1 },{ code:"1.202", name:"OG İzolatör", category:"İzolatör", quantity:3 },{ code:"1.403", name:"Civata Seti", category:"Aksesuar", quantity:1 }]},
+      { id:"kit-aydinlatma", title:"Aydınlatma", emoji:"💡", items:[{ code:"1.003", name:"Aydınlatma Direği", category:"Direk", quantity:1 },{ code:"1.301", name:"AG İletken", category:"İletken", quantity:1 },{ code:"1.402", name:"Kelepçe", category:"Aksesuar", quantity:2 }]},
+      { id:"kit-demontaj", title:"Demontaj", emoji:"♻️", items:[{ code:"6.001", name:"Demontaj Direk", category:"Demontaj", quantity:1 },{ code:"6.101", name:"Demontaj Travers", category:"Demontaj", quantity:1 },{ code:"6.201", name:"Demontaj İzolatör", category:"Demontaj", quantity:3 }]}
+    ];
+    const MATERIALS = [
+      { code:"1.001", name:"Beton Direk", category:"Direk" },{ code:"1.002", name:"Demir Direk", category:"Direk" },{ code:"1.003", name:"Aydınlatma Direği", category:"Direk" },
+      { code:"1.101", name:"AG Travers", category:"Travers" },{ code:"1.102", name:"OG Travers", category:"Travers" },{ code:"1.201", name:"AG İzolatör", category:"İzolatör" },{ code:"1.202", name:"OG İzolatör", category:"İzolatör" },
+      { code:"1.301", name:"AG İletken", category:"İletken" },{ code:"1.302", name:"OG İletken", category:"İletken" },{ code:"1.401", name:"Bağ Teli", category:"Aksesuar" },{ code:"1.402", name:"Kelepçe", category:"Aksesuar" },{ code:"1.403", name:"Civata Seti", category:"Aksesuar" },
+      { code:"6.001", name:"Demontaj Direk", category:"Demontaj" },{ code:"6.101", name:"Demontaj Travers", category:"Demontaj" },{ code:"6.201", name:"Demontaj İzolatör", category:"Demontaj" }
+    ];
+    const STORAGE = { projects:"mm-projects", session:"mm-session" };
 
-function renderChefPanel(point){
-  els.pointName.value=point.name; els.pointCoords.textContent=`${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
-  els.kitsArea.innerHTML=QUICK_KITS.map(kit=>`<button class="kit" data-kit="${kit.id}"><div class="emoji">${kit.emoji}</div><div class="title">${kit.title}</div><div class="sub">${kit.items.length} kalem</div></button>`).join("");
-  els.kitsArea.querySelectorAll("[data-kit]").forEach(btn=>btn.addEventListener("click",()=>{ const kit=QUICK_KITS.find(k=>k.id===btn.dataset.kit); if(kit) addItemsToSelected(kit.items); }));
-  const suggestions=getSuggestions(point.items);
-  if(!suggestions.length){ els.suggestionSection.classList.add("hidden"); els.suggestionsArea.innerHTML=""; }
-  else{
-    els.suggestionSection.classList.remove("hidden");
-    els.suggestionsArea.innerHTML=suggestions.map(s=>`<button class="chip" data-sug="${s.code}">${s.name} · ${s.score}</button>`).join("");
-    els.suggestionsArea.querySelectorAll("[data-sug]").forEach(btn=>btn.addEventListener("click",()=>{ const m=findMaterial(btn.dataset.sug); if(m) addItemsToSelected([{...m,quantity:1}]); }));
-  }
-  const ap=approvalMap(point.id);
-  els.chefItemsArea.innerHTML=!point.items.length?`<div class="card">Hazır malzemelerden bir set seçerek başlayın.</div>`:point.items.map(item=>{ const approved=Number(ap[item.code]||0), extra=Math.max(Number(item.quantity||0)-approved,0); return `<div class="item"><div class="item-top"><div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div><button class="mini" data-remove="${item.rowId}">Sil</button></div><div class="row" style="margin-top:10px;align-items:center"><input class="qty" type="number" min="0" value="${item.quantity}" data-qty="${item.rowId}">${approved>0?`<span class="tag green">Onaylı ${approved}</span>`:""}${extra>0?`<span class="tag orange">İlave ${extra}</span>`:""}</div></div>`; }).join("");
-  els.chefItemsArea.querySelectorAll("[data-remove]").forEach(btn=>btn.addEventListener("click",()=>removeItem(btn.dataset.remove)));
-  els.chefItemsArea.querySelectorAll("[data-qty]").forEach(inp=>inp.addEventListener("change",()=>updateItem(inp.dataset.qty, inp.value)));
-  const q=(els.materialSearch.value||"").toLocaleLowerCase("tr"); const mats=MATERIALS.filter(m=>`${m.name} ${m.code} ${m.category}`.toLocaleLowerCase("tr").includes(q));
-  els.materialsArea.innerHTML=mats.map(m=>`<button class="item" data-mat="${m.code}"><div class="item-top"><div><div class="item-name">${m.name}</div><div class="item-sub">${m.category} · ${m.code}</div></div><div class="mini">Ekle</div></div></button>`).join("");
-  els.materialsArea.querySelectorAll("[data-mat]").forEach(btn=>btn.addEventListener("click",()=>{ const m=findMaterial(btn.dataset.mat); if(m) addItemsToSelected([{...m,quantity:1}]); }));
-}
-function renderEngineerPanel(point){
-  els.engPointName.textContent=point.name; els.engPointCoords.textContent=`${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
-  const ap=approvalMap(point.id);
-  els.engineerItemsArea.innerHTML=!point.items.length?`<div class="card">Bu noktada henüz malzeme yok.</div>`:point.items.map(item=>{ const approved=Number(ap[item.code]||0), current=Number(item.quantity||0), extra=Math.max(current-approved,0); return `<div class="item"><div class="item-top"><div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div><div>${approved>0?`<span class="tag green">Kilitli ${approved}</span>`:""}${extra>0?`<span class="tag orange">İlave ${extra}</span>`:approved===0?`<span class="tag orange">Yeni ${current}</span>`:""}</div></div><div class="item-sub" style="margin-top:8px">Toplam: ${current}</div></div>`; }).join("");
-}
-function renderProjectsPanel(){
-  const pts=points();
-  els.projectsArea.innerHTML=!pts.length?`<div class="card">Henüz nokta yok.</div>`:pts.map(point=>`<div class="item"><div class="item-top"><div><div class="item-name">${point.name}</div><div class="item-sub">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)} · ${point.items.length} satır</div></div></div><div class="row" style="margin-top:10px"><button class="mini" data-open="${point.id}">Aç</button>${state.session.role==="chief"?`<button class="mini" data-copy="${point.id}">Kopyala</button><button class="mini" data-delete="${point.id}">Sil</button>`:""}</div></div>`).join("");
-  els.projectsArea.querySelectorAll("[data-open]").forEach(btn=>btn.addEventListener("click",()=>selectPoint(btn.dataset.open)));
-  els.projectsArea.querySelectorAll("[data-copy]").forEach(btn=>btn.addEventListener("click",()=>{ state.copyModeId=btn.dataset.copy; updateMapInfo(); closeSheet(); toast("Yeni konuma dokunarak kopyala"); }));
-  els.projectsArea.querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",()=>removePoint(btn.dataset.delete)));
-}
-function renderSummaryPanel(){
-  const groups=pointOutputGroups();
-  els.summaryArea.innerHTML=!groups.length?`<div class="card">Henüz çıktı oluşmadı.</div>`:groups.map(group=>`<div class="card"><div class="point-title">${group.point.name}</div><div class="item-sub">${group.point.lat.toFixed(5)}, ${group.point.lng.toFixed(5)}</div>${group.rows.map(r=>`<div class="point-box" style="margin-top:8px"><div class="item-top"><div><div class="item-name">${r.material}</div><div class="item-sub">${r.code}</div></div><div style="text-align:right"><div class="badge">Toplam ${r.current}</div><div style="margin-top:6px">${r.approved>0?`<span class="tag green">Onaylı ${r.approved}</span>`:""} ${r.extra>0?`<span class="tag orange">İlave ${r.extra}</span>`:""}</div></div></div></div>`).join("")}</div>`).join("");
-}
-function render(){
-  updateMapInfo(); drawMarkers(); renderProjectsPanel(); renderSummaryPanel();
-  const p=selectedPoint();
-  if(state.sheetMode==="projects") setSheetMode("projects"); else if(state.sheetMode==="summary") setSheetMode("summary"); else setSheetMode("point");
-  if(p){ if(state.session && state.session.role==="chief") renderChefPanel(p); else if(state.session) renderEngineerPanel(p); }
-}
-function showOnboarding(){
-  els.onboarding.classList.remove("hidden");
-  const ps=Object.values(state.projects);
-  els.obProjectSelect.innerHTML=ps.length?ps.map(p=>`<option value="${p.id}">${p.name}</option>`).join(""):`<option value="">Önce bir proje oluşturulmalı</option>`;
-}
-function hideOnboarding(){ els.onboarding.classList.add("hidden"); }
-function resetSessionToOnboarding(){
-  state.session = null;
-  saveAll();
-  showOnboarding();
-  closeSheet();
-  updateMapInfo();
-}
-function startApp(){ if(!state.session) showOnboarding(); else { render(); setSheetSnap("peek"); } }
+    const state = {
+      projects: load(STORAGE.projects, {}),
+      session: load(STORAGE.session, null),
+      selectedPointId: null,
+      copyModeId: null,
+      markers: {},
+      drawerMode: "point",
+      onboardingRole: "chief",
+      onboardingLocation: null,
+      userLocationMarker: null
+    };
 
-Array.from(document.querySelectorAll("[data-role]")).forEach(btn=>btn.addEventListener("click",()=>{
-  state.onboardingRole=btn.dataset.role;
-  document.querySelectorAll("[data-role]").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  els.chiefForm.classList.toggle("hidden", state.onboardingRole!=="chief");
-  els.engineerForm.classList.toggle("hidden", state.onboardingRole!=="engineer");
-}));
-els.obGetLocationBtn.addEventListener("click",()=>{
-  if(!navigator.geolocation){ toast("Konum alınamadı"); return; }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    state.onboardingLocation={ lat:pos.coords.latitude, lng:pos.coords.longitude };
-    els.obLocationText.value=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-  },()=>toast("Konum alınamadı"));
-});
-els.startBtn.addEventListener("click",()=>{
-  if(state.onboardingRole==="chief"){
-    const name=els.obProjectName.value.trim();
-    if(!name){ toast("Proje adı gerekli"); return; }
-    let p=Object.values(state.projects).find(x=>x.name===name);
-    if(!p){
-      p=createProject(name, els.obEmail.value.trim(), state.onboardingLocation);
+    const $ = id => document.getElementById(id);
+    const els = {
+      mapInfo:$("mapInfo"), switchRoleBtn:$("switchRoleBtn"), locateBtn:$("locateBtn"),
+      projectsBtn:$("projectsBtn"), openDrawerBtn:$("openDrawerBtn"), drawer:$("drawer"), closeDrawerBtn:$("closeDrawerBtn"),
+      drawerTitle:$("drawerTitle"), drawerSub:$("drawerSub"), menuProjectsBtn:$("menuProjectsBtn"), menuSummaryBtn:$("menuSummaryBtn"),
+      emptyPanel:$("emptyPanel"), chefPanel:$("chefPanel"), engineerPanel:$("engineerPanel"), projectsPanel:$("projectsPanel"), summaryPanel:$("summaryPanel"),
+      pointName:$("pointName"), pointCoords:$("pointCoords"), copyPointBtn:$("copyPointBtn"), deletePointBtn:$("deletePointBtn"),
+      kitsArea:$("kitsArea"), suggestionSection:$("suggestionSection"), suggestionsArea:$("suggestionsArea"),
+      tabCurrentBtn:$("tabCurrentBtn"), tabAddBtn:$("tabAddBtn"), currentTab:$("currentTab"), addTab:$("addTab"),
+      chefItemsArea:$("chefItemsArea"), materialSearch:$("materialSearch"), materialsArea:$("materialsArea"),
+      engPointName:$("engPointName"), engPointCoords:$("engPointCoords"), engineerItemsArea:$("engineerItemsArea"),
+      projectsArea:$("projectsArea"), summaryArea:$("summaryArea"), downloadCsvBtn:$("downloadCsvBtn"), sendMailBtn:$("sendMailBtn"),
+      toast:$("toast"),
+      onboarding:$("onboarding"), chiefForm:$("chiefForm"), engineerForm:$("engineerForm"),
+      obChiefProjectSelect:$("obChiefProjectSelect"), obProjectName:$("obProjectName"), obEmail:$("obEmail"), obLocationText:$("obLocationText"), obGetLocationBtn:$("obGetLocationBtn"),
+      obProjectSelect:$("obProjectSelect"), obEmailEngineer:$("obEmailEngineer"), startBtn:$("startBtn")
+    };
+
+    function load(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; } catch { return fallback; } }
+    function saveAll(){ localStorage.setItem(STORAGE.projects, JSON.stringify(state.projects)); localStorage.setItem(STORAGE.session, JSON.stringify(state.session)); }
+    function toast(msg){ els.toast.textContent=msg; els.toast.classList.remove("hidden"); clearTimeout(window.__toast); window.__toast=setTimeout(()=>els.toast.classList.add("hidden"),2200); }
+    function uid(){ return Date.now()+"-"+Math.random().toString(36).slice(2,9); }
+    function project(){ return state.session ? state.projects[state.session.projectId] || null : null; }
+    function points(){ const p=project(); return p ? p.points||[] : []; }
+    function selectedPoint(){ return points().find(p=>p.id===state.selectedPointId) || null; }
+    function setProject(p){ p.points=p.points||[]; p.approvals=p.approvals||{}; p.logs=p.logs||[]; state.projects[p.id]=p; saveAll(); }
+    function createProject(name,email,location){ return { id:"prj-"+uid(), name, email, location, points:[], approvals:{}, logs:[] }; }
+    function openDrawer(){ els.drawer.classList.add("open"); }
+    function closeDrawer(){ els.drawer.classList.remove("open"); }
+    function approvalMap(pointId){ const p=project(); return p && p.approvals && p.approvals[pointId] ? p.approvals[pointId] : {}; }
+    function findMaterial(code){ return MATERIALS.find(m=>m.code===code)||null; }
+
+    function updateMapInfo(){
+      const roleText = state.session ? (state.session.role==="chief" ? "Şantiye Şefi" : "Kontrol Mühendisi") : "Rol seç";
+      els.switchRoleBtn.textContent = roleText + " · Değiştir";
+      if(!state.session) els.mapInfo.textContent = "Önce proje seç";
+      else if(state.session.role==="chief") els.mapInfo.textContent = "Projede haritaya dokunarak nokta ekle";
+      else els.mapInfo.textContent = "Sadece seçili projenin noktaları görünür";
+    }
+
+    function clearMapMarkers(){
+      Object.values(state.markers).forEach(m => map.removeLayer(m));
+      state.markers = {};
+    }
+
+    function drawMarkers(){
+      clearMapMarkers();
+      if(!state.session) return;
+      points().forEach(p => {
+        const marker = L.marker([p.lat,p.lng]).addTo(map);
+        marker.bindPopup(`<div><b>${p.name}</b><br><span style="font-size:12px;color:#64748b">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</span><br><span style="font-size:12px">${p.items.length} satır</span></div>`);
+        marker.on("click", () => selectPoint(p.id));
+        state.markers[p.id] = marker;
+      });
+    }
+
+    function setDrawerMode(mode){
+      state.drawerMode = mode;
+      [els.emptyPanel, els.chefPanel, els.engineerPanel, els.projectsPanel, els.summaryPanel].forEach(x => x.classList.add("hidden"));
+
+      if(!state.session){
+        els.drawerTitle.textContent = "Hazır";
+        els.drawerSub.textContent = "Önce proje seç";
+        els.emptyPanel.classList.remove("hidden");
+        return;
+      }
+
+      if(mode === "projects"){
+        els.drawerTitle.textContent = "Noktalar";
+        els.drawerSub.textContent = "Seçili projedeki noktalar";
+        els.projectsPanel.classList.remove("hidden");
+        return;
+      }
+
+      if(mode === "summary"){
+        els.drawerTitle.textContent = "Çıktı";
+        els.drawerSub.textContent = "Nokta bazlı keşif çıktısı";
+        els.summaryPanel.classList.remove("hidden");
+        return;
+      }
+
+      const p = selectedPoint();
+      if(!p){
+        els.drawerTitle.textContent = "Nokta seç";
+        els.drawerSub.textContent = "Haritaya dokun veya listeden seç";
+        els.emptyPanel.classList.remove("hidden");
+        return;
+      }
+
+      if(state.session.role === "chief"){
+        els.drawerTitle.textContent = p.name;
+        els.drawerSub.textContent = "Revize et, malzeme ekle";
+        els.chefPanel.classList.remove("hidden");
+      } else {
+        els.drawerTitle.textContent = p.name;
+        els.drawerSub.textContent = "Malzemeleri tek tek onayla";
+        els.engineerPanel.classList.remove("hidden");
+      }
+    }
+
+    function getSuggestions(items){
+      const p = project();
+      const selectedCodes = new Set(items.map(x => x.code));
+      const counts = {};
+      (p?.logs || []).forEach(log => {
+        const codes = log.codes || [];
+        if(!codes.some(c => selectedCodes.has(c))) return;
+        codes.forEach(code => { if(!selectedCodes.has(code)) counts[code] = (counts[code] || 0) + 1; });
+      });
+      return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([code,score]) => ({ ...findMaterial(code), score })).filter(Boolean);
+    }
+
+    function logPointItems(point){
+      const p = project();
+      p.logs.unshift({ pointId: point.id, time: new Date().toISOString(), codes: point.items.map(i=>i.code) });
+      p.logs = p.logs.slice(0,300);
       setProject(p);
     }
-    state.session={ role:"chief", projectId:p.id, email:els.obEmail.value.trim(), location:state.onboardingLocation };
-  } else {
-    const pid=els.obProjectSelect.value;
-    if(!pid || !state.projects[pid]){ toast("Geçerli bir proje seçin"); return; }
-    state.session={ role:"engineer", projectId:pid, email:els.obEmailEngineer.value.trim() };
-  }
-  saveAll();
-  hideOnboarding();
-  render();
-});
-els.switchRoleBtn.addEventListener("click", resetSessionToOnboarding);
-els.locateBtn.addEventListener("click",()=>{
-  if(!navigator.geolocation){ toast("Konum desteklenmiyor"); return; }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const latlng=[pos.coords.latitude,pos.coords.longitude];
-    map.setView(latlng,18);
-    if(state.userLocationMarker) map.removeLayer(state.userLocationMarker);
-    state.userLocationMarker=L.marker(latlng).addTo(map).bindPopup("Mevcut konum");
-    toast("Konum bulundu");
-  },()=>toast("Konum alınamadı"));
-});
-els.projectsBtn.addEventListener("click",()=>{ setSheetMode("projects"); openSheet("full"); render(); });
-els.expandBtn.addEventListener("click",()=>openSheet("full"));
-els.closeSheetBtn.addEventListener("click",()=>closeSheet());
-els.menuProjectsBtn.addEventListener("click",()=>{ setSheetMode("projects"); openSheet("full"); render(); });
-els.menuSummaryBtn.addEventListener("click",()=>{ setSheetMode("summary"); openSheet("full"); render(); });
-els.tabCurrentBtn.addEventListener("click",()=>{ state.tab="current"; els.tabCurrentBtn.classList.add("active"); els.tabAddBtn.classList.remove("active"); els.currentTab.classList.remove("hidden"); els.addTab.classList.add("hidden"); });
-els.tabAddBtn.addEventListener("click",()=>{ state.tab="add"; els.tabAddBtn.classList.add("active"); els.tabCurrentBtn.classList.remove("active"); els.addTab.classList.remove("hidden"); els.currentTab.classList.add("hidden"); });
-els.materialSearch.addEventListener("input",()=>{ const p=selectedPoint(); if(p && state.session && state.session.role==="chief") renderChefPanel(p); });
-els.pointName.addEventListener("input",e=>updateSelectedPoint({ name:e.target.value }));
-els.copyPointBtn.addEventListener("click",()=>{ const p=selectedPoint(); if(!p) return; state.copyModeId=p.id; closeSheet(); updateMapInfo(); toast("Yeni konuma dokunarak kopyala"); });
-els.deletePointBtn.addEventListener("click",()=>{ const p=selectedPoint(); if(!p) return; removePoint(p.id); toast("Nokta silindi"); });
-els.approvePointBtn.addEventListener("click",approveSelectedPoint);
-els.downloadCsvBtn.addEventListener("click",()=>{ downloadCsv(); toast("CSV indirildi"); });
-els.sendMailBtn.addEventListener("click",sendMail);
 
+    function addPoint(latlng){
+      const p = project();
+      if(!p){ toast("Önce proje seçin"); return; }
+      if(state.session.role === "engineer"){ toast("Kontrol mühendisi yeni nokta eklemez"); return; }
 
-const handle = document.querySelector('.sheet-handle-wrap');
-let dragStartY = null;
-let dragging = false;
+      if(state.copyModeId){
+        const source = p.points.find(x => x.id===state.copyModeId);
+        if(!source) return;
+        const clone = { ...source, id:uid(), name:source.name+" Kopya", lat:latlng.lat, lng:latlng.lng, items:source.items.map(i=>({ ...i, rowId:uid() })) };
+        p.points.push(clone);
+        state.selectedPointId = clone.id;
+        state.copyModeId = null;
+        setProject(p);
+        render();
+        setDrawerMode("point");
+        openDrawer();
+        toast("Nokta kopyalandı");
+        return;
+      }
 
-handle.addEventListener('touchstart', (e) => {
-  dragStartY = e.touches[0].clientY;
-  dragging = true;
-}, {passive:true});
+      const point = { id:uid(), name:`Nokta ${p.points.length+1}`, lat:latlng.lat, lng:latlng.lng, items:[] };
+      p.points.push(point);
+      state.selectedPointId = point.id;
+      setProject(p);
+      render();
+      setDrawerMode("point");
+      openDrawer();
+      toast("Yeni nokta oluşturuldu");
+    }
 
-handle.addEventListener('touchmove', (e) => {
-  if(!dragging) return;
-  const y = e.touches[0].clientY;
-  const diff = y - dragStartY;
-  if(diff < -80) setSheetSnap('full');
-  else if(diff > 80) setSheetSnap('peek');
-  else setSheetSnap('mid');
-}, {passive:true});
+    function selectPoint(id){
+      state.selectedPointId = id;
+      setDrawerMode("point");
+      render();
+      openDrawer();
+    }
 
-handle.addEventListener('touchend', () => {
-  dragging = false;
-  dragStartY = null;
-});
+    function updateSelectedPoint(patch){
+      const p = project(); const point = selectedPoint();
+      if(!p || !point) return;
+      p.points = p.points.map(x => x.id===point.id ? { ...x, ...patch } : x);
+      setProject(p);
+      render();
+    }
 
-handle.addEventListener('mousedown', (e) => {
-  dragStartY = e.clientY;
-  dragging = true;
-});
-window.addEventListener('mousemove', (e) => {
-  if(!dragging) return;
-  const diff = e.clientY - dragStartY;
-  if(diff < -80) setSheetSnap('full');
-  else if(diff > 80) setSheetSnap('peek');
-  else setSheetSnap('mid');
-});
-window.addEventListener('mouseup', () => {
-  dragging = false;
-  dragStartY = null;
-});
+    function removePoint(id){
+      const p = project();
+      if(!p) return;
+      p.points = p.points.filter(x => x.id!==id);
+      delete p.approvals[id];
+      if(state.selectedPointId===id) state.selectedPointId = null;
+      if(state.copyModeId===id) state.copyModeId = null;
+      setProject(p);
+      render();
+    }
 
-const map = L.map('map', { zoomControl:false }).setView([39.92, 32.85], 6);
-L.control.zoom({ position:'bottomright' }).addTo(map);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap katkıcıları' }).addTo(map);
-map.on("click", e=>addPoint(e.latlng));
+    function isItemLocked(pointId, code){
+      const ap = approvalMap(pointId);
+      return Number(ap[code] || 0) > 0;
+    }
 
-startApp();
-render();
-</script>
+    function addItemsToSelected(items){
+      const p = project(); const point = selectedPoint();
+      if(!p || !point) return;
+      const newItems = [...point.items];
+      items.forEach(item => {
+        const ex = newItems.find(x => x.code===item.code);
+        if(ex) ex.quantity = Number(ex.quantity||0) + Number(item.quantity||1);
+        else newItems.push({ ...item, rowId:uid() });
+      });
+      p.points = p.points.map(x => x.id===point.id ? { ...x, items:newItems } : x);
+      setProject(p);
+      logPointItems({ ...point, items:newItems });
+      render();
+      toast("Malzeme eklendi");
+    }
+
+    function updateItem(rowId, qty){
+      const p = project(); const point = selectedPoint();
+      if(!p || !point) return;
+      const items = point.items.map(i => {
+        if(i.rowId !== rowId) return i;
+        const lockedQty = Number(approvalMap(point.id)[i.code] || 0);
+        return { ...i, quantity: Math.max(Number(qty||0), lockedQty) };
+      });
+      p.points = p.points.map(x => x.id===point.id ? { ...x, items } : x);
+      setProject(p);
+      render();
+    }
+
+    function removeItem(rowId){
+      const p = project(); const point = selectedPoint();
+      if(!p || !point) return;
+      const item = point.items.find(i => i.rowId===rowId);
+      if(item && isItemLocked(point.id, item.code)){ toast("Onaylı malzeme silinemez"); return; }
+      const items = point.items.filter(i => i.rowId!==rowId);
+      p.points = p.points.map(x => x.id===point.id ? { ...x, items } : x);
+      setProject(p);
+      render();
+    }
+
+    function approveSingleItem(code){
+      const p = project(); const point = selectedPoint();
+      if(!p || !point) return;
+      const item = point.items.find(i => i.code===code);
+      if(!item) return;
+      p.approvals[point.id] = p.approvals[point.id] || {};
+      p.approvals[point.id][code] = Number(item.quantity || 0);
+      setProject(p);
+      render();
+      toast("Malzeme onaylandı");
+    }
+
+    function pointOutputGroups(){
+      return points().map(point => {
+        const ap = approvalMap(point.id);
+        const rows = point.items.map(i => {
+          const approved = Number(ap[i.code] || 0);
+          const current = Number(i.quantity || 0);
+          const extra = Math.max(current - approved, 0);
+          return { code:i.code, material:i.name, current, approved, extra };
+        }).filter(r => r.current>0 || r.approved>0 || r.extra>0);
+        return { point, rows };
+      }).filter(g => g.rows.length);
+    }
+
+    function exportRows(){
+      const p = project();
+      const rows = [];
+      pointOutputGroups().forEach(g => g.rows.forEach(r => rows.push([p.name, g.point.name, r.code, r.material, r.current, r.approved, r.extra])));
+      return rows;
+    }
+
+    function downloadCsv(){
+      const rows = [["Proje","Nokta","Kod","Malzeme","Toplam","Onaylı","İlave"], ...exportRows()];
+      const csv = rows.map(line => line.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${project().name.replace(/\s+/g,"_")}_nokta_bazli_kesif.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function sendMail(){
+      const rows = exportRows();
+      const lines = [`${project().name} proje keşif özeti:`, ""];
+      let prev = "";
+      rows.forEach(r => {
+        if(r[1] !== prev){ lines.push(`### ${r[1]}`); prev = r[1]; }
+        lines.push(`- ${r[3]} (${r[2]}) | Toplam: ${r[4]} | Onaylı: ${r[5]} | İlave: ${r[6]}`);
+      });
+      window.location.href = `mailto:${encodeURIComponent(state.session.email || project().email || "")}?subject=${encodeURIComponent(project().name + " - Nokta Bazlı Keşif")}&body=${encodeURIComponent(lines.join("\n"))}`;
+    }
+
+    function renderChefPanel(point){
+      els.pointName.value = point.name;
+      els.pointCoords.textContent = `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+
+      els.kitsArea.innerHTML = QUICK_KITS.map(kit => `<button class="kit" data-kit="${kit.id}"><div class="emoji">${kit.emoji}</div><div class="title">${kit.title}</div><div class="sub">${kit.items.length} kalem</div></button>`).join("");
+      els.kitsArea.querySelectorAll("[data-kit]").forEach(btn => btn.addEventListener("click", () => {
+        const kit = QUICK_KITS.find(k => k.id===btn.dataset.kit);
+        if(kit) addItemsToSelected(kit.items);
+      }));
+
+      const suggestions = getSuggestions(point.items);
+      if(!suggestions.length){
+        els.suggestionSection.classList.add("hidden");
+        els.suggestionsArea.innerHTML = "";
+      } else {
+        els.suggestionSection.classList.remove("hidden");
+        els.suggestionsArea.innerHTML = suggestions.map(s => `<button class="chip" data-sug="${s.code}">${s.name} · ${s.score}</button>`).join("");
+        els.suggestionsArea.querySelectorAll("[data-sug]").forEach(btn => btn.addEventListener("click", () => {
+          const m = findMaterial(btn.dataset.sug);
+          if(m) addItemsToSelected([{ ...m, quantity:1 }]);
+        }));
+      }
+
+      const ap = approvalMap(point.id);
+      if(!point.items.length){
+        els.chefItemsArea.innerHTML = `<div class="card">Hazır malzemelerden bir set seçerek başlayın.</div>`;
+      } else {
+        els.chefItemsArea.innerHTML = point.items.map(item => {
+          const approved = Number(ap[item.code] || 0);
+          const extra = Math.max(Number(item.quantity||0) - approved, 0);
+          const locked = approved > 0;
+          return `<div class="item">
+            <div class="item-top">
+              <div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div>
+              ${locked ? `<span class="tag green">Kilitli</span>` : `<button class="mini" data-remove="${item.rowId}">Sil</button>`}
+            </div>
+            <div class="row" style="margin-top:10px;align-items:center">
+              <input class="qty" type="number" min="${approved}" value="${item.quantity}" data-qty="${item.rowId}">
+              ${approved>0?`<span class="tag green">Onaylı ${approved}</span>`:""}
+              ${extra>0?`<span class="tag orange">İlave ${extra}</span>`:""}
+            </div>
+          </div>`;
+        }).join("");
+        els.chefItemsArea.querySelectorAll("[data-remove]").forEach(btn => btn.addEventListener("click", () => removeItem(btn.dataset.remove)));
+        els.chefItemsArea.querySelectorAll("[data-qty]").forEach(inp => inp.addEventListener("change", () => updateItem(inp.dataset.qty, inp.value)));
+      }
+
+      const q = (els.materialSearch.value || "").toLocaleLowerCase("tr");
+      const mats = MATERIALS.filter(m => `${m.name} ${m.code} ${m.category}`.toLocaleLowerCase("tr").includes(q));
+      els.materialsArea.innerHTML = mats.map(m => `<button class="item" data-mat="${m.code}"><div class="item-top"><div><div class="item-name">${m.name}</div><div class="item-sub">${m.category} · ${m.code}</div></div><div class="mini">Ekle</div></div></button>`).join("");
+      els.materialsArea.querySelectorAll("[data-mat]").forEach(btn => btn.addEventListener("click", () => {
+        const m = findMaterial(btn.dataset.mat);
+        if(m) addItemsToSelected([{ ...m, quantity:1 }]);
+      }));
+    }
+
+    function renderEngineerPanel(point){
+      els.engPointName.textContent = point.name;
+      els.engPointCoords.textContent = `${point.lat.toFixed(5)}, ${point.lng.toFixed(5)}`;
+      const ap = approvalMap(point.id);
+
+      if(!point.items.length){
+        els.engineerItemsArea.innerHTML = `<div class="card">Bu noktada henüz malzeme yok.</div>`;
+        return;
+      }
+
+      els.engineerItemsArea.innerHTML = point.items.map(item => {
+        const approved = Number(ap[item.code] || 0);
+        const current = Number(item.quantity || 0);
+        const extra = Math.max(current - approved, 0);
+        return `<div class="item">
+          <div class="item-top">
+            <div><div class="item-name">${item.name}</div><div class="item-sub">${item.code}</div></div>
+            <div>${approved>0?`<span class="tag green">Onaylı ${approved}</span>`:extra>0?`<span class="tag orange">İlave ${extra}</span>`:`<span class="tag orange">Yeni ${current}</span>`}</div>
+          </div>
+          <div class="row" style="margin-top:10px;align-items:center;justify-content:space-between">
+            <div class="item-sub">Toplam: ${current}</div>
+            <button class="mini" data-approve="${item.code}">Bu Malzemeyi Onayla</button>
+          </div>
+        </div>`;
+      }).join("");
+      els.engineerItemsArea.querySelectorAll("[data-approve]").forEach(btn => btn.addEventListener("click", () => approveSingleItem(btn.dataset.approve)));
+    }
+
+    function renderProjectsPanel(){
+      const pts = points();
+      if(!pts.length){
+        els.projectsArea.innerHTML = `<div class="card">Bu projede henüz nokta yok.</div>`;
+        return;
+      }
+      els.projectsArea.innerHTML = pts.map(point => `<div class="item">
+        <div class="item-top">
+          <div><div class="item-name">${point.name}</div><div class="item-sub">${point.lat.toFixed(5)}, ${point.lng.toFixed(5)} · ${point.items.length} satır</div></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="mini" data-open="${point.id}">Aç</button>
+          ${state.session.role==="chief" ? `<button class="mini" data-copy="${point.id}">Kopyala</button><button class="mini" data-delete="${point.id}">Sil</button>` : ``}
+        </div>
+      </div>`).join("");
+      els.projectsArea.querySelectorAll("[data-open]").forEach(btn => btn.addEventListener("click", () => selectPoint(btn.dataset.open)));
+      els.projectsArea.querySelectorAll("[data-copy]").forEach(btn => btn.addEventListener("click", () => {
+        state.copyModeId = btn.dataset.copy;
+        closeDrawer();
+        toast("Yeni konuma dokunarak kopyala");
+      }));
+      els.projectsArea.querySelectorAll("[data-delete]").forEach(btn => btn.addEventListener("click", () => removePoint(btn.dataset.delete)));
+    }
+
+    function renderSummaryPanel(){
+      const groups = pointOutputGroups();
+      if(!groups.length){
+        els.summaryArea.innerHTML = `<div class="card">Henüz çıktı oluşmadı.</div>`;
+        return;
+      }
+      els.summaryArea.innerHTML = groups.map(group => `<div class="card">
+        <div class="point-title">${group.point.name}</div>
+        <div class="item-sub">${group.point.lat.toFixed(5)}, ${group.point.lng.toFixed(5)}</div>
+        ${group.rows.map(r => `<div class="point-box" style="margin-top:8px">
+          <div class="item-top">
+            <div><div class="item-name">${r.material}</div><div class="item-sub">${r.code}</div></div>
+            <div style="text-align:right">
+              <div class="badge">Toplam ${r.current}</div>
+              <div style="margin-top:6px">${r.approved>0?`<span class="tag green">Onaylı ${r.approved}</span>`:""} ${r.extra>0?`<span class="tag orange">İlave ${r.extra}</span>`:""}</div>
+            </div>
+          </div>
+        </div>`).join("")}
+      </div>`).join("");
+    }
+
+    function render(){
+      updateMapInfo();
+      drawMarkers();
+      renderProjectsPanel();
+      renderSummaryPanel();
+
+      const p = selectedPoint();
+      if(state.drawerMode==="projects") setDrawerMode("projects");
+      else if(state.drawerMode==="summary") setDrawerMode("summary");
+      else setDrawerMode("point");
+
+      if(p){
+        if(state.session && state.session.role==="chief") renderChefPanel(p);
+        else if(state.session) renderEngineerPanel(p);
+      }
+    }
+
+    function setDrawerMode(mode){
+      state.drawerMode = mode;
+      [els.emptyPanel, els.chefPanel, els.engineerPanel, els.projectsPanel, els.summaryPanel].forEach(x => x.classList.add("hidden"));
+
+      if(!state.session){
+        els.drawerTitle.textContent = "Hazır";
+        els.drawerSub.textContent = "Önce proje seç";
+        els.emptyPanel.classList.remove("hidden");
+        return;
+      }
+
+      if(mode==="projects"){
+        els.drawerTitle.textContent = "Noktalar";
+        els.drawerSub.textContent = "Seçili projedeki noktalar";
+        els.projectsPanel.classList.remove("hidden");
+        return;
+      }
+      if(mode==="summary"){
+        els.drawerTitle.textContent = "Çıktı";
+        els.drawerSub.textContent = "Nokta bazlı keşif çıktısı";
+        els.summaryPanel.classList.remove("hidden");
+        return;
+      }
+
+      const p = selectedPoint();
+      if(!p){
+        els.drawerTitle.textContent = "Nokta seç";
+        els.drawerSub.textContent = "Haritaya dokun veya listeden seç";
+        els.emptyPanel.classList.remove("hidden");
+        return;
+      }
+
+      if(state.session.role==="chief"){
+        els.drawerTitle.textContent = p.name;
+        els.drawerSub.textContent = "Revize et, malzeme ekle";
+        els.chefPanel.classList.remove("hidden");
+      } else {
+        els.drawerTitle.textContent = p.name;
+        els.drawerSub.textContent = "Malzemeleri tek tek onayla";
+        els.engineerPanel.classList.remove("hidden");
+      }
+    }
+
+    function showOnboarding(){
+      els.onboarding.classList.remove("hidden");
+      const ps = Object.values(state.projects);
+      const opts = ps.length ? ps.map(p => `<option value="${p.id}">${p.name}</option>`).join("") : `<option value="">Mevcut proje yok</option>`;
+      els.obProjectSelect.innerHTML = opts;
+      els.obChiefProjectSelect.innerHTML = `<option value="">Yeni proje oluştur</option>` + opts;
+    }
+    function hideOnboarding(){ els.onboarding.classList.add("hidden"); }
+    function resetSessionToOnboarding(){
+      state.session = null;
+      state.selectedPointId = null;
+      state.copyModeId = null;
+      saveAll();
+      clearMapMarkers();
+      showOnboarding();
+      closeDrawer();
+      render();
+    }
+    function startApp(){
+      if(!state.session){
+        clearMapMarkers();
+        showOnboarding();
+      } else {
+        render();
+      }
+    }
+
+    Array.from(document.querySelectorAll("[data-role]")).forEach(btn => btn.addEventListener("click", () => {
+      state.onboardingRole = btn.dataset.role;
+      document.querySelectorAll("[data-role]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      els.chiefForm.classList.toggle("hidden", state.onboardingRole!=="chief");
+      els.engineerForm.classList.toggle("hidden", state.onboardingRole!=="engineer");
+    }));
+
+    els.obGetLocationBtn.addEventListener("click", () => {
+      if(!navigator.geolocation){ toast("Konum alınamadı"); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        state.onboardingLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        els.obLocationText.value = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+      }, () => toast("Konum alınamadı"));
+    });
+
+    els.startBtn.addEventListener("click", () => {
+      if(state.onboardingRole==="chief"){
+        const selectedExisting = els.obChiefProjectSelect.value;
+        const newName = els.obProjectName.value.trim();
+        let p = null;
+        if(newName){
+          p = Object.values(state.projects).find(x => x.name===newName);
+          if(!p){
+            p = createProject(newName, els.obEmail.value.trim(), state.onboardingLocation);
+            setProject(p);
+          }
+        } else if(selectedExisting && state.projects[selectedExisting]){
+          p = state.projects[selectedExisting];
+        } else {
+          toast("Yeni proje adı girin veya mevcut proje seçin");
+          return;
+        }
+        state.session = { role:"chief", projectId:p.id, email:els.obEmail.value.trim() || p.email || "" };
+      } else {
+        const pid = els.obProjectSelect.value;
+        if(!pid || !state.projects[pid]){ toast("Geçerli bir proje seçin"); return; }
+        state.session = { role:"engineer", projectId:pid, email:els.obEmailEngineer.value.trim() };
+      }
+      state.selectedPointId = null;
+      state.copyModeId = null;
+      saveAll();
+      hideOnboarding();
+      render();
+    });
+
+    els.switchRoleBtn.addEventListener("click", resetSessionToOnboarding);
+    els.locateBtn.addEventListener("click", () => {
+      if(!navigator.geolocation){ toast("Konum desteklenmiyor"); return; }
+      navigator.geolocation.getCurrentPosition(pos => {
+        const latlng = [pos.coords.latitude, pos.coords.longitude];
+        map.setView(latlng, 18);
+        if(state.userLocationMarker) map.removeLayer(state.userLocationMarker);
+        state.userLocationMarker = L.marker(latlng).addTo(map).bindPopup("Mevcut konum");
+        toast("Konum bulundu");
+      }, () => toast("Konum alınamadı"));
+    });
+
+    els.projectsBtn.addEventListener("click", () => { setDrawerMode("projects"); openDrawer(); render(); });
+    els.openDrawerBtn.addEventListener("click", () => openDrawer());
+    els.closeDrawerBtn.addEventListener("click", closeDrawer);
+    els.menuProjectsBtn.addEventListener("click", () => { setDrawerMode("projects"); openDrawer(); render(); });
+    els.menuSummaryBtn.addEventListener("click", () => { setDrawerMode("summary"); openDrawer(); render(); });
+
+    els.tabCurrentBtn.addEventListener("click", () => {
+      els.tabCurrentBtn.classList.add("active"); els.tabAddBtn.classList.remove("active");
+      els.currentTab.classList.remove("hidden"); els.addTab.classList.add("hidden");
+    });
+    els.tabAddBtn.addEventListener("click", () => {
+      els.tabAddBtn.classList.add("active"); els.tabCurrentBtn.classList.remove("active");
+      els.addTab.classList.remove("hidden"); els.currentTab.classList.add("hidden");
+    });
+
+    els.materialSearch.addEventListener("input", () => { const p = selectedPoint(); if(p && state.session && state.session.role==="chief") renderChefPanel(p); });
+    els.pointName.addEventListener("input", e => updateSelectedPoint({ name:e.target.value }));
+    els.copyPointBtn.addEventListener("click", () => {
+      const p = selectedPoint();
+      if(!p) return;
+      state.copyModeId = p.id;
+      closeDrawer();
+      toast("Yeni konuma dokunarak kopyala");
+    });
+    els.deletePointBtn.addEventListener("click", () => {
+      const p = selectedPoint();
+      if(!p) return;
+      const hasLocked = p.items.some(i => isItemLocked(p.id, i.code));
+      if(hasLocked){ toast("Onaylı malzeme içeren nokta silinemez"); return; }
+      removePoint(p.id);
+      toast("Nokta silindi");
+    });
+    els.downloadCsvBtn.addEventListener("click", () => { downloadCsv(); toast("CSV indirildi"); });
+    els.sendMailBtn.addEventListener("click", sendMail);
+
+    const map = L.map('map', { zoomControl:false }).setView([39.92, 32.85], 6);
+    L.control.zoom({ position:'bottomright' }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap katkıcıları' }).addTo(map);
+    map.on("click", e => addPoint(e.latlng));
+
+    startApp();
+    render();
+  </script>
 </body>
 </html>
